@@ -573,6 +573,7 @@ server.registerTool(
       group: z.enum(['day', 'week', 'month', 'quarter', 'year']).optional().describe('Grouping of data by time'),
       top_keys: z.number().optional().describe('Number of top keys to return (max 30)'),
       timezone: z.string().optional().describe('Time zone in ±hh:mm format'),
+      attribution: z.enum(['automatic', 'last', 'first', 'lastsign', 'last_yandex_direct_click', 'cross_device_first', 'cross_device_last', 'cross_device_last_significant', 'cross_device_last_yandex_direct_click']).optional().describe('Attribution model. The attribution is applied by modifying dimension names (e.g., ym:s:UTMCampaign becomes ym:s:automaticUTMCampaign). This matches Yandex Metrika UI behavior. Supported models: automatic (default), last, first, lastsign. Note: last_yandex_direct_click and cross-device models may not be supported for all UTM dimensions.'),
     },
   },
   withErrorHandling(async ({ 
@@ -583,7 +584,8 @@ server.registerTool(
     dimensions, 
     group = 'day', 
     top_keys = 7, 
-    timezone 
+    timezone,
+    attribution
   }) => {
     const timeData = await client.getDataByTime(
       counter_id, 
@@ -593,7 +595,8 @@ server.registerTool(
       dimensions, 
       group, 
       top_keys, 
-      timezone
+      timezone,
+      attribution
     );
     return {
       content: [

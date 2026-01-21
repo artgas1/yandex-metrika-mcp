@@ -351,6 +351,59 @@ export class YandexMetrikaClient {
     return this.makeRequest(url);
   }
 
+  /**
+   * Build dimension name with attribution prefix.
+   * Converts base dimension names (e.g., "ym:s:UTMCampaign") to attribution-prefixed names
+   * (e.g., "ym:s:automaticUTMCampaign") based on the attribution model.
+   */
+  private buildDimensionNameWithAttribution(
+    dimension: string,
+    attribution: string = 'automatic'
+  ): string {
+    // Mapping of attribution parameter values to dimension name prefixes
+    // Based on Yandex Metrika API documentation and testing
+    // Note: Some models use snake_case format (with underscores) instead of camelCase
+    const attributionPrefixMap: Record<string, string> = {
+      automatic: 'automatic',
+      last: 'last',
+      first: 'first',
+      lastsign: 'lastsign',
+      // These models use snake_case format (with underscores) in dimension names
+      last_yandex_direct_click: 'last_yandex_direct_click',
+      cross_device_first: 'cross_device_first',
+      cross_device_last: 'cross_device_last',
+      cross_device_last_significant: 'cross_device_last_significant',
+      cross_device_last_yandex_direct_click: 'cross_device_last_yandex_direct_click',
+    };
+
+    if (!attributionPrefixMap[attribution]) {
+      throw new Error(
+        `Invalid attribution: ${attribution}. Must be one of: ${Object.keys(attributionPrefixMap).join(', ')}`
+      );
+    }
+
+    const prefix = attributionPrefixMap[attribution];
+
+    // Check if dimension already has attribution prefix
+    // If it does, replace it; otherwise, add it
+    // Note: Some models use snake_case (with underscores), others use camelCase
+    const dimensionPattern = /^ym:s:(automatic|last|first|lastsign|last_yandex_direct_click|lastYandexDirectClick|cross_device_first|crossDeviceFirst|cross_device_last|crossDeviceLast|cross_device_last_significant|crossDeviceLastSignificant|cross_device_last_yandex_direct_click|crossDeviceLastYandexDirectClick)(.+)$/;
+    const match = dimension.match(dimensionPattern);
+
+    if (match) {
+      // Dimension already has attribution prefix, replace it
+      return `ym:s:${prefix}${match[2]}`;
+    } else {
+      // Extract base dimension name (e.g., "UTMCampaign" from "ym:s:UTMCampaign")
+      const baseMatch = dimension.match(/^ym:s:(.+)$/);
+      if (baseMatch) {
+        return `ym:s:${prefix}${baseMatch[1]}`;
+      }
+      // If dimension doesn't match expected format, return as-is
+      return dimension;
+    }
+  }
+
   async getDataByTime(
     counterId: string,
     metrics: string[],
@@ -359,7 +412,8 @@ export class YandexMetrikaClient {
     dimensions?: string[],
     group: 'day' | 'week' | 'month' | 'quarter' | 'year' = 'day',
     topKeys: number = 7,
-    timezone?: string
+    timezone?: string,
+    attribution?: 'automatic' | 'last' | 'first' | 'lastsign' | 'last_yandex_direct_click' | 'cross_device_first' | 'cross_device_last' | 'cross_device_last_significant' | 'cross_device_last_yandex_direct_click'
   ): Promise<any> {
     if (!counterId || typeof counterId !== 'string') {
       throw new Error('Counter ID must be a non-empty string');
@@ -377,12 +431,26 @@ export class YandexMetrikaClient {
       throw new Error('Maximum 10 dimensions allowed per request');
     }
 
+    // Apply attribution to dimensions if provided
+    // This ensures we use attribution-prefixed dimension names (e.g., ym:s:automaticUTMCampaign)
+    // instead of the attribution parameter, which matches Yandex Metrika UI behavior
+    let processedDimensions = dimensions;
+    if (attribution && dimensions && dimensions.length > 0) {
+      processedDimensions = dimensions.map(dim => 
+        this.buildDimensionNameWithAttribution(dim, attribution)
+      );
+    }
+
     let url = `${API_BASE}/${API_REPORTS}/bytime?ids=${counterId}&metrics=${metrics.join(',')}&group=${group}&top_keys=${topKeys}`;
     
     if (dateFrom) url += `&date1=${dateFrom}`;
     if (dateTo) url += `&date2=${dateTo}`;
-    if (dimensions && dimensions.length > 0) url += `&dimensions=${dimensions.join(',')}`;
+    if (processedDimensions && processedDimensions.length > 0) {
+      url += `&dimensions=${processedDimensions.join(',')}`;
+    }
     if (timezone) url += `&timezone=${encodeURIComponent(timezone)}`;
+    // Note: We don't add attribution as a parameter anymore,
+    // as it's now embedded in the dimension names
     
     return this.makeRequest(url);
   }

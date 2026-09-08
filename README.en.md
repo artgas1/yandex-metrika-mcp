@@ -153,11 +153,24 @@ The descriptions of every exposed tool sit in the model's context on **every** t
 you call them or not. It is the one cost of a server that is always paid. Measured
 `tools/list` size (2026-09-08, JSON bytes):
 
-| Profile | Tools | `tools/list` | ≈ tokens |
+| Profile | Tools | `tools/list` | tokens |
 | --- | ---: | ---: | ---: |
-| `core` (default) | 10 | 31,511 B | ~7.9k |
-| `read` | 51 | 67,404 B | ~16.9k |
-| `all` + `METRIKA_ALLOW_WRITES=1` | 108 | 157,631 B | ~39.4k |
+| `core` (default) | 10 | 31,511 B | **14.5k** — measured |
+| `read` | 51 | 67,404 B | ~31k — estimated |
+| `all` + `METRIKA_ALLOW_WRITES=1` | 108 | 157,631 B | ~73k — estimated |
+
+The byte figures are exact and anyone can reproduce them: serialise the `tools/list` response
+and take its length. Tokens are a different matter, and it is worth being blunt about it.
+
+⚠️ **Only `core` is a real measurement** — it comes from a client's `/context`, which counts
+with its own tokeniser. The other two rows are converted from bytes at **2.17 bytes per
+token**, the ratio taken from that same `core` row.
+
+The common "4 characters per token" heuristic is off by nearly 2× here: it was derived on
+English text, and this server's descriptions are in Russian, where Cyrillic tokenises about
+twice as poorly as Latin under BPE. The first version of this table was built on that
+heuristic and claimed 7.9k for `core` instead of 14.5k. If you are budgeting context for a
+server with non-English descriptions, count with a tokeniser rather than dividing by four.
 
 The `core` set was derived from measured real usage, not taste: the six Stat reports plus the
 lookups a report cannot be built without (`metrika_counter_list`, `metrika_counter_get`,

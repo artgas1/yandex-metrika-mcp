@@ -121,6 +121,13 @@ not after.
 
 ## Setup
 
+> **Ten tools out of 108 are exposed by default** — the ones people count with. Counter and goal
+> management, grants and the Logs API are enabled with `METRIKA_PROFILE`; see
+> [Why not everything by default](#why-not-everything-by-default) below.
+>
+> You can also just ask the server: `metrika_catalog_list` lists what is exposed, what is
+> hidden, and how to turn it on.
+
 ```json
 {
   "mcpServers": {
@@ -147,6 +154,32 @@ The token is a Yandex OAuth token — the same kind used for Yandex Direct and W
 | `METRIKA_MAX_OUTPUT_CHARS` | `120000` | Per-call response size ceiling. A Logs API export usually does not fit — a day of visits runs to hundreds of thousands of characters; the truncation is declared in `_meta.truncated_by_server`. |
 | `METRIKA_API_BASE` | empty | Override the API address (proxy, or a stub in tests). The override is announced on stderr. |
 
+### Finding out what is hidden without opening the README
+
+The **`metrika_catalog_list`** tool is exposed in every profile and answers from the spec
+shipped inside the package — it needs neither a token nor the network:
+
+```json
+{
+  "profile": "METRIKA_PROFILE=core",
+  "api_methods_total": 108,
+  "api_methods_declared": 10,
+  "api_methods_hidden": 98,
+  "writes_enabled": false,
+  "declared_tools": { "Stat API — отчёты": ["metrika_stat_data", "…"] },
+  "hidden_tools": { "Management API — …": ["metrika_goal_create", "…"] },
+  "how_to_widen": ["METRIKA_PROFILE=read — …", "METRIKA_PROFILE=all + METRIKA_ALLOW_WRITES=1 — …"]
+}
+```
+
+It exists for a simple reason: **a server that hides something must be able to say what, and
+how to turn it on.** The model sees `instructions`, a person does not — clients do not surface
+them, and nobody reads the startup line on stderr during normal work. Without this tool the
+only way to learn about the other 98 was to come here and read.
+
+The listing is built from the same filter the tools are registered through, so it has nowhere
+to drift, and a test asserts it.
+
 ### Why not everything by default
 
 The descriptions of every exposed tool sit in the model's context on **every** turn, whether
@@ -155,9 +188,13 @@ you call them or not. It is the one cost of a server that is always paid. Measur
 
 | Profile | Tools | `tools/list` | tokens |
 | --- | ---: | ---: | ---: |
-| `core` (default) | 10 | 31,511 B | **14.5k** — measured |
-| `read` | 51 | 67,404 B | ~31k — estimated |
-| `all` + `METRIKA_ALLOW_WRITES=1` | 108 | 157,631 B | ~73k — estimated |
+| `core` (default) | 10 + catalogue | 32,181 B | **14.8k** |
+| `read` | 51 + catalogue | 68,074 B | ~31k — estimated |
+| `all` + `METRIKA_ALLOW_WRITES=1` | 108 + catalogue | 158,301 B | ~73k — estimated |
+
+The `core` measurement was 14.5k before the catalogue tool existed and 14.8k after: its schema
+costs about 670 bytes, roughly 2% of the set. Its response is not part of that price — that is
+paid only when it is called.
 
 The byte figures are exact and anyone can reproduce them: serialise the `tools/list` response
 and take its length. Tokens are a different matter, and it is worth being blunt about it.

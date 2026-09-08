@@ -7,6 +7,7 @@ import { loadSpec } from './spec.js';
 import { isWrite } from './annotations.js';
 import { apiOrigin } from './http.js';
 import { resolveSurface } from './profiles.js';
+import { registerCatalog } from './catalog.js';
 import { DEFAULT_MAX_OUTPUT_CHARS, DEFAULT_TRAFFIC_FILTER, registerAll, trafficFilter } from './tools.js';
 
 /**
@@ -84,6 +85,10 @@ const server = new McpServer({
 });
 
 const count = registerAll(server, spec, token, { allowWrites, maxOutputChars, include });
+
+// Сервер, который что-то скрыл, обязан уметь сказать что и как включить: в
+// интерфейс клиента instructions не показываются, а stderr никто не читает.
+registerCatalog(server, spec, { label: surface.label, include, allowWrites });
 
 if (count === 0) {
   console.error(`${surface.label} не выбрал ни одного инструмента.`);

@@ -107,6 +107,39 @@ jobs:
       - name: npm publish
         run: npm publish --provenance --access public
 
+  bundle:
+    # Бандл — вход в каталог коннекторов Anthropic по ветке «desktop extensions»
+    # и в Smithery для stdio. Собирается ЗДЕСЬ, а не руками, ровно потому, что
+    # ручная копия расходится с сервером молча: версия в манифесте отстаёт от
+    # package.json, список инструментов — от профиля, и увидит это тот, кто
+    # поставил бандл, а не мы.
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run mcpb
+      - name: Приложить бандл к релизу
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          V="${GITHUB_REF_NAME#v}"
+          FILE="yandex-metrika-mcp-server-${V}.mcpb"
+          test -f "$FILE" || { echo "::error::бандл $FILE не собрался"; exit 1; }
+          # Релиз мог ещё не существовать: тег создаётся раньше него.
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 \
+            || gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes
+          gh release upload "$GITHUB_REF_NAME" "$FILE" --clobber
+          echo "приложен $FILE ($(du -h "$FILE" | cut -f1))"
+
   registry:
     needs: npm
     runs-on: ubuntu-latest

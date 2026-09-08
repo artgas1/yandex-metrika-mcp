@@ -3,6 +3,16 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 версии — [SemVer](https://semver.org/lang/ru/).
 
+## [2.2.5] — 2026-09-08
+
+### Изменено
+
+- **Один npm во всех джобах.** Workflow переведены на Node 24 (npm 11.13), а
+  установка `npm@latest` перед публикацией убрана. Раньше тесты в `verify` шли
+  на npm 10, а публикация — на 12: разные версии по-разному отдают
+  `npm pack --json`, и проверка состава пакета уронила сам выкат. Требование
+  «11.5.1 и новее» проверяется по-прежнему, но выполняется базовым образом.
+
 ## [2.2.4] — 2026-09-08
 
 ### Изменено
@@ -139,5 +149,6 @@
   `sources_summary`, `get_page_performance` и прочие). Они покрывали малую часть
   API, зашивали измерения и период в код и не давали задать произвольный запрос.
 
+[2.2.5]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v2.2.5
 [2.2.4]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v2.2.4
 [2.2.3]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v2.2.3

@@ -1,0 +1,180 @@
+name: Синхронизация с API Яндекса
+
+# Тест на дрейф в CI краснеет только когда кто-то запушил. Если Яндекс поменяет
+# API, а в репозитории месяц тишина — мы об этом не узнаем. Отсюда расписание:
+# источник истины опрашивается сам, независимо от нашей активности.
+on:
+  schedule:
+    - cron: '17 4 * * *' # ежедневно 07:17 МСК
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Два одновременных прогона писали бы в одну ветку. Не отменяем идущий —
+# он может как раз открывать PR.
+concurrency:
+  group: api-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+
+      # Спека до перегенерации — база сравнения. Снимаем ДО, иначе сравнивать
+      # будет не с чем: файл перезапишется на месте.
+      - name: Запомнить текущую спеку
+        run: cp spec/metrika-api.json /tmp/spec-before.json
+
+      # fetch-docs выходит с кодом 1, если хоть одна страница не скачалась.
+      # Это важно: частичная выгрузка дала бы «метод исчез» вместо «сеть подвела».
+      - name: Скачать документацию Яндекса
+        run: npm run spec:fetch
+
+      - name: Пересобрать спеку
+        run: npm run spec:build
+
+      - name: Оценить дрейф
+        id: drift
+        run: |
+          set -euo pipefail
+          node tools/diff-spec.mjs /tmp/spec-before.json spec/metrika-api.json > /tmp/drift.md
+          node tools/diff-spec.mjs /tmp/spec-before.json spec/metrika-api.json --json > /tmp/drift.json
+          cat /tmp/drift.json
+          {
+            echo "changed=$(jq -r .changed /tmp/drift.json)"
+            echo "generator=$(jq -r .generatorChanged /tmp/drift.json)"
+            echo "added=$(jq -r .methodsAdded /tmp/drift.json)"
+            echo "removed=$(jq -r .methodsRemoved /tmp/drift.json)"
+          } >> "$GITHUB_OUTPUT"
+          cat /tmp/drift.md >> "$GITHUB_STEP_SUMMARY"
+
+      # Разбор привязан к разметке конкретной версии Diplodoc. Сменилась она —
+      # спеке нельзя доверять целиком, и автоматический PR тут вреден: он выглядел
+      # бы как обычное обновление. Останавливаемся и зовём человека.
+      - name: Генератор документации не сменился
+        if: steps.drift.outputs.generator == 'true'
+        run: |
+          echo "::error::Сменился генератор документации Яндекса — распознаватели надо сверить вручную"
+          cat /tmp/drift.md
+          exit 1
+
+      - name: Разбор прошёл без проблем
+        if: steps.drift.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          N=$(jq '.problems | length' spec/metrika-api.json)
+          if [ "$N" != "0" ]; then
+            echo "::error::в спеке $N проблем разбора — принимать нельзя"
+            jq -r '.problems[]' spec/metrika-api.json | head -20
+            exit 1
+          fi
+
+      # Полный прогон на НОВОЙ спеке: имена инструментов могли столкнуться,
+      # обязательность — потеряться. PR без этого предлагал бы вслепую.
+      - name: Тесты на новой спеке
+        if: steps.drift.outputs.changed == 'true'
+        run: npm test
+
+      - name: Поднять версию и дописать журнал
+        if: steps.drift.outputs.changed == 'true'
+        id: bump
+        run: |
+          set -euo pipefail
+          # Появился или исчез метод — это новый или пропавший инструмент,
+          # видимое пользователю изменение: minor. Всё остальное — patch.
+          if [ "${{ steps.drift.outputs.added }}" != "0" ] || [ "${{ steps.drift.outputs.removed }}" != "0" ]; then
+            PART=minor
+          else
+            PART=patch
+          fi
+          NEW=$(node -e '
+            const [maj,min,pat] = require("./package.json").version.split(".").map(Number);
+            const part = process.argv[1];
+            console.log(part === "minor" ? `${maj}.${min+1}.0` : `${maj}.${min}.${pat+1}`);
+          ' "$PART")
+          echo "версия: $PART → $NEW"
+          node -e '
+            const fs = require("fs");
+            for (const f of ["package.json", "server.json"]) {
+              const d = JSON.parse(fs.readFileSync(f, "utf8"));
+              d.version = process.argv[1];
+              if (d.packages) d.packages[0].version = process.argv[1];
+              fs.writeFileSync(f, JSON.stringify(d, null, 2) + "\n");
+            }
+          ' "$NEW"
+          DATE=$(date -u +%Y-%m-%d)
+          {
+            printf '## [%s] — %s\n\n### Изменено\n\n' "$NEW" "$DATE"
+            printf -- '- Спека пересобрана по документации Яндекса. Разбор изменений:\n\n'
+            # Заголовки отчёта понижаем: `##` внутри пункта журнала ломает структуру.
+            sed -E 's/^#+ (.*)$/**\1**/' /tmp/drift.md | sed 's/^/  /'
+            printf '\n'
+          } > /tmp/entry.md
+          # Вставляем перед первой записью журнала, не в конец.
+          awk 'NR==FNR{e=e $0 ORS; next} /^## \[/ && !done {printf "%s", e; done=1} {print}' \
+            /tmp/entry.md CHANGELOG.md > /tmp/CHANGELOG.md
+          mv /tmp/CHANGELOG.md CHANGELOG.md
+          echo "version=$NEW" >> "$GITHUB_OUTPUT"
+          echo "part=$PART" >> "$GITHUB_OUTPUT"
+
+      - name: Открыть или обновить PR
+        if: steps.drift.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          V: ${{ steps.bump.outputs.version }}
+        run: |
+          set -euo pipefail
+          BRANCH=chore/api-sync
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -B "$BRANCH"
+          git add spec/metrika-api.json package.json server.json CHANGELOG.md
+          git commit -m "chore(spec): синхронизация с API Яндекса ($V)
+
+          Спека пересобрана по документации. Разбор изменений — в описании PR."
+          git push --force origin "$BRANCH"
+
+          {
+            echo "Спека пересобрана по документации Яндекса — расписанием, а не по чьему-то пушу."
+            echo
+            cat /tmp/drift.md
+            echo
+            echo '---'
+            echo
+            echo "Версия поднята до **$V** (${{ steps.bump.outputs.part }})."
+            echo
+            echo "⚠️ **Проверки на этом PR не запустятся** — он открыт токеном GitHub Actions,"
+            echo "а такие PR не триггерят \`pull_request\`-workflow. Это не «ещё проверяется»"
+            echo "и не «проверять некому»: полный прогон уже сделан на ЭТОМ дереве, в самой"
+            echo "синхронизации — [прогон]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)."
+            echo "Хочешь проверки прямо на PR — закрой и открой его заново."
+            echo
+            echo "Мерж не автоматический намеренно: новый метод — это новый инструмент,"
+            echo "а исчезнувший ломает тех, кто им пользовался. Решает человек."
+            echo
+            echo "После мержа выпуск одной командой:"
+            echo '```'
+            echo "git pull origin main && git tag -a v$V -m 'v$V' && git push origin v$V"
+            echo '```'
+          } > /tmp/body.md
+
+          if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
+            gh pr edit "$BRANCH" --title "chore(spec): синхронизация с API Яндекса ($V)" --body-file /tmp/body.md
+            echo "PR обновлён"
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "chore(spec): синхронизация с API Яндекса ($V)" --body-file /tmp/body.md
+          fi
+
+      - name: Дрейфа нет
+        if: steps.drift.outputs.changed != 'true'
+        run: echo "Спека совпадает с документацией Яндекса — делать нечего."

@@ -14,7 +14,8 @@
     "smoke": "node tools/smoke.mjs",
     "inspector": "npx @modelcontextprotocol/inspector node ./build/index.js",
     "protocol": "tsc && node --test test/protocol.test.mjs",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm test",
+    "spec:diff": "node tools/diff-spec.mjs"
   },
   "keywords": [
     "yandex",

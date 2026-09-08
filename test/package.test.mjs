@@ -52,7 +52,7 @@ test('в архив не попадает ничего лишнего', () => {
   const files = packedFiles();
   for (const f of files) {
     assert.ok(
-      /^(build\/|spec\/|README|CHANGELOG|LICENSE|package\.json)/.test(f),
+      /^(build\/|spec\/|README|CHANGELOG|SECURITY|LICENSE|package\.json)/.test(f),
       `в пакет уехал посторонний файл: ${f}`,
     );
   }

@@ -1,6 +1,7 @@
 # Yandex Metrika MCP Server
 
-An MCP server for the Yandex Metrika API with **complete coverage**: 108 API methods, 108 tools.
+An MCP server for the Yandex Metrika API. All 108 methods are covered; **ten** are exposed by
+default — the ones people actually count with. The rest is one variable away.
 
 mcp-name: io.github.artgas1/yandex-metrika-mcp-server
 
@@ -112,7 +113,7 @@ off its classes, so a version mismatch stops the spec build instead of quietly c
   "mcpServers": {
     "yandex-metrika-mcp": {
       "command": "npx",
-      "args": ["-y", "yandex-metrika-mcp-server"],
+      "args": ["-y", "yandex-metrika-mcp-server@3"],
       "env": { "YANDEX_API_KEY": "..." }
     }
   }
@@ -126,15 +127,29 @@ The token is a Yandex OAuth token — the same kind used for Yandex Direct and W
 | Variable | Default | What it does |
 | --- | --- | --- |
 | `YANDEX_API_KEY` | — | OAuth token. The server refuses to start without it. |
-| `METRIKA_ALLOW_WRITES` | unset | `1` permits data-changing calls. Left unset, 57 such tools stay visible but return a `writes_disabled` refusal. |
-| `METRIKA_TOOLS` | empty (all 108) | Comma-separated filter: an API section (`stat`, `logs`, `management`), a tool-name prefix (`metrika_goal`), or an exact name. |
+| `METRIKA_PROFILE` | `core` | How much of the catalogue is exposed: `core` (10 tools), `read` (all 51 read-only), `all` (all 108). An unknown value aborts startup. |
+| `METRIKA_ALLOW_WRITES` | unset | `1` both permits and **exposes** the 57 data-changing tools. Left unset, they are absent from `tools/list` entirely. |
+| `METRIKA_TOOLS` | empty | Your own selection, comma-separated: an API section (`stat`, `logs`, `management`), a tool-name prefix (`metrika_goal`), or an exact name. Set, it overrides the profile. |
 | `METRIKA_TRAFFIC_FILTER` | `ym:s:isRobot=='no'` | Segmentation expression added to Stat reports. Given in full. |
 | `METRIKA_MAX_OUTPUT_CHARS` | `120000` | Per-call response size ceiling. A Logs API export usually does not fit — a day of visits runs to hundreds of thousands of characters; the truncation is declared in `_meta.truncated_by_server`. |
 | `METRIKA_API_BASE` | empty | Override the API address (proxy, or a stub in tests). The override is announced on stderr. |
 
-The full tool set costs **roughly 50 000 tokens** in `tools/list`, and that goes into the
-context of every session. If you do not need the Management section,
-`METRIKA_TOOLS=stat,logs` cuts it down to 13 tools.
+### Why not everything by default
+
+The descriptions of every exposed tool sit in the model's context on **every** turn, whether
+you call them or not. It is the one cost of a server that is always paid. Measured
+`tools/list` size (2026-09-08, JSON bytes):
+
+| Profile | Tools | `tools/list` | ≈ tokens |
+| --- | ---: | ---: | ---: |
+| `core` (default) | 10 | 31,511 B | ~7.9k |
+| `read` | 51 | 67,404 B | ~16.9k |
+| `all` + `METRIKA_ALLOW_WRITES=1` | 108 | 157,631 B | ~39.4k |
+
+The `core` set was derived from measured real usage, not taste: the six Stat reports plus the
+lookups a report cannot be built without (`metrika_counter_list`, `metrika_counter_get`,
+`metrika_goal_list`, `metrika_segment_list`). The size ceiling is asserted by a test, so the
+manifest cannot get more expensive silently.
 
 ## Security
 

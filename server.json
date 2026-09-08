@@ -6,12 +6,12 @@
     "url": "https://github.com/artgas1/yandex-metrika-mcp",
     "source": "github"
   },
-  "version": "2.2.4",
+  "version": "2.2.5",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "yandex-metrika-mcp-server",
-      "version": "2.2.4",
+      "version": "2.2.5",
       "transport": {
         "type": "stdio"
       },

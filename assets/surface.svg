@@ -1,0 +1,254 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="tools/list: 108 инструментов Яндекс Метрики, 98 вычеркнуты, по умолчанию объявляются 10">
+<style>
+  .mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; }
+  .sans { font-family: "Golos Text", -apple-system, "Segoe UI", system-ui, sans-serif; }
+  .name { font-size: 9px; fill: #98a1ab; }
+  .name.keep { fill: #16191d; font-weight: 600; }
+  .eyebrow { font-size: 11.5px; letter-spacing: 1.6px; fill: #98a1ab; font-weight: 600; }
+  .h1 { font-size: 41px; font-weight: 800; fill: #16191d; letter-spacing: -.8px; }
+  .lede { font-size: 15px; fill: #4c545e; }
+  .fignum { font-size: 27px; font-weight: 800; fill: #16191d; letter-spacing: -.4px; }
+  .figkey { font-size: 11.5px; fill: #4c545e; }
+  .arrow { font-size: 20px; fill: #c8362a; font-weight: 700; }
+  .strike { stroke: #c8362a; stroke-width: 1.05; }
+  .s { transform-origin: left center; animation: cut 11s linear infinite; }
+  @keyframes cut { 0% { transform: scaleX(0); } 3% { transform: scaleX(1); } 92% { transform: scaleX(1); } 96%, 100% { transform: scaleX(0); } }
+  .fadein { animation: fadein 11s linear infinite; }
+  @keyframes fadein { 0%, 34% { opacity: 0; } 40%, 92% { opacity: 1; } 97%, 100% { opacity: 0; } }
+  .keepbox { animation: keepin 11s linear infinite; }
+  @keyframes keepin { 0%, 30% { opacity: 0; } 36%, 92% { opacity: 1; } 97%, 100% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .s, .fadein, .keepbox { animation: none; }
+    .s { transform: scaleX(1); }
+    .fadein, .keepbox { opacity: 1; }
+  }
+</style>
+<rect width="1200" height="630" fill="#eceef0"/>
+<rect x="28" y="118" width="1144" height="416" fill="#e3e6ea" stroke="#d2d7dd"/>
+<text class="sans eyebrow" x="48" y="46">TOOLS/LIST · ЯНДЕКС МЕТРИКА · MCP</text>
+<text class="sans h1" x="48" y="86">Вычеркнуть 98 инструментов</text>
+<text class="sans lede" x="48" y="108">Покрыты все 108 методов API. По умолчанию объявляются десять — те, которыми считают.</text>
+<g class="keepbox"><rect x="45.0" y="141.6" width="110.0" height="11.6" fill="#cfdcea" opacity="1"/>
+<rect x="45.0" y="155.0" width="115.4" height="11.6" fill="#cfdcea" opacity="1"/>
+<rect x="45.0" y="168.4" width="99.1" height="11.6" fill="#cfdcea" opacity="1"/>
+<rect x="45.0" y="181.8" width="115.4" height="11.6" fill="#cfdcea" opacity="1"/>
+<rect x="45.0" y="195.2" width="110.0" height="11.6" fill="#cfdcea" opacity="1"/>
+<rect x="45.0" y="208.6" width="131.7" height="11.6" fill="#cfdcea" opacity="1"/>
+<rect x="45.0" y="222.0" width="185.9" height="11.6" fill="#cfdcea" opacity="1"/>
+<rect x="45.0" y="235.4" width="99.1" height="11.6" fill="#cfdcea" opacity="1"/>
+<rect x="45.0" y="248.8" width="126.2" height="11.6" fill="#cfdcea" opacity="1"/>
+<rect x="45.0" y="262.2" width="104.6" height="11.6" fill="#cfdcea" opacity="1"/></g>
+<text class="mono name keep" x="48" y="150.0">metrika_counter_get</text>
+<text class="mono name keep" x="48" y="163.4">metrika_counter_list</text>
+<text class="mono name keep" x="48" y="176.8">metrika_goal_list</text>
+<text class="mono name keep" x="48" y="190.2">metrika_segment_list</text>
+<text class="mono name keep" x="48" y="203.6">metrika_stat_bytime</text>
+<text class="mono name keep" x="48" y="217.0">metrika_stat_comparison</text>
+<text class="mono name keep" x="48" y="230.4">metrika_stat_comparison_drilldown</text>
+<text class="mono name keep" x="48" y="243.8">metrika_stat_data</text>
+<text class="mono name keep" x="48" y="257.2">metrika_stat_drilldown</text>
+<text class="mono name keep" x="48" y="270.6">metrika_stat_pivot</text>
+<text class="mono name" x="48" y="284.0">metrika_logs_cancel</text>
+<text class="mono name" x="48" y="297.4">metrika_logs_clean</text>
+<text class="mono name" x="48" y="310.8">metrika_logs_create</text>
+<text class="mono name" x="48" y="324.2">metrika_logs_download</text>
+<text class="mono name" x="48" y="337.6">metrika_logs_evaluate</text>
+<text class="mono name" x="48" y="351.0">metrika_logs_get</text>
+<text class="mono name" x="48" y="364.4">metrika_logs_list</text>
+<text class="mono name" x="48" y="377.8">metrika_access_filter_create</text>
+<text class="mono name" x="48" y="391.2">metrika_access_filter_delete</text>
+<text class="mono name" x="48" y="404.6">metrika_access_filter_get</text>
+<text class="mono name" x="48" y="418.0">metrika_access_filter_list</text>
+<text class="mono name" x="48" y="431.4">metrika_access_filter_update</text>
+<text class="mono name" x="48" y="444.8">metrika_account_list</text>
+<text class="mono name" x="48" y="458.2">metrika_account_delete</text>
+<text class="mono name" x="48" y="471.6">metrika_account_update</text>
+<text class="mono name" x="48" y="485.0">metrika_call_list</text>
+<text class="mono name" x="48" y="498.4">metrika_call_get</text>
+<text class="mono name" x="320" y="150.0">metrika_call_create</text>
+<text class="mono name" x="320" y="163.4">metrika_chart_annotation_create</text>
+<text class="mono name" x="320" y="176.8">metrika_chart_annotation_delete</text>
+<text class="mono name" x="320" y="190.2">metrika_chart_annotation_list</text>
+<text class="mono name" x="320" y="203.6">metrika_chart_annotation_get</text>
+<text class="mono name" x="320" y="217.0">metrika_chart_annotation_update</text>
+<text class="mono name" x="320" y="230.4">metrika_chats_list</text>
+<text class="mono name" x="320" y="243.8">metrika_chats_list_by_id</text>
+<text class="mono name" x="320" y="257.2">metrika_chats_create</text>
+<text class="mono name" x="320" y="270.6">metrika_clients_list</text>
+<text class="mono name" x="320" y="284.0">metrika_cloud_get</text>
+<text class="mono name" x="320" y="297.4">metrika_cloud_delete</text>
+<text class="mono name" x="320" y="310.8">metrika_counter_label_update</text>
+<text class="mono name" x="320" y="324.2">metrika_counter_label_delete</text>
+<text class="mono name" x="320" y="337.6">metrika_counter_create</text>
+<text class="mono name" x="320" y="351.0">metrika_counter_delete</text>
+<text class="mono name" x="320" y="364.4">metrika_counter_update</text>
+<text class="mono name" x="320" y="377.8">metrika_counter_restore</text>
+<text class="mono name" x="320" y="391.2">metrika_delegates_create</text>
+<text class="mono name" x="320" y="404.6">metrika_delegates_list</text>
+<text class="mono name" x="320" y="418.0">metrika_delegates_delete</text>
+<text class="mono name" x="320" y="431.4">metrika_expense_list</text>
+<text class="mono name" x="320" y="444.8">metrika_expense_get</text>
+<text class="mono name" x="320" y="458.2">metrika_expense_create_multipart</text>
+<text class="mono name" x="320" y="471.6">metrika_expense_create_remove_body</text>
+<text class="mono name" x="320" y="485.0">metrika_expense_create_remove_single_line</text>
+<text class="mono name" x="320" y="498.4">metrika_filter_create</text>
+<text class="mono name" x="592" y="150.0">metrika_filter_delete</text>
+<text class="mono name" x="592" y="163.4">metrika_filter_update</text>
+<text class="mono name" x="592" y="176.8">metrika_filter_get</text>
+<text class="mono name" x="592" y="190.2">metrika_filter_list</text>
+<text class="mono name" x="592" y="203.6">metrika_goal_create</text>
+<text class="mono name" x="592" y="217.0">metrika_goal_delete</text>
+<text class="mono name" x="592" y="230.4">metrika_goal_update</text>
+<text class="mono name" x="592" y="243.8">metrika_goal_list_messengers</text>
+<text class="mono name" x="592" y="257.2">metrika_goal_list_social_networks</text>
+<text class="mono name" x="592" y="270.6">metrika_goal_get</text>
+<text class="mono name" x="592" y="284.0">metrika_grant_create</text>
+<text class="mono name" x="592" y="297.4">metrika_grant_create_public</text>
+<text class="mono name" x="592" y="310.8">metrika_grant_delete</text>
+<text class="mono name" x="592" y="324.2">metrika_grant_delete_public</text>
+<text class="mono name" x="592" y="337.6">metrika_grant_update</text>
+<text class="mono name" x="592" y="351.0">metrika_grant_get</text>
+<text class="mono name" x="592" y="364.4">metrika_grant_list</text>
+<text class="mono name" x="592" y="377.8">metrika_grant_my</text>
+<text class="mono name" x="592" y="391.2">metrika_label_create</text>
+<text class="mono name" x="592" y="404.6">metrika_label_delete</text>
+<text class="mono name" x="592" y="418.0">metrika_label_get</text>
+<text class="mono name" x="592" y="431.4">metrika_label_list</text>
+<text class="mono name" x="592" y="444.8">metrika_label_update</text>
+<text class="mono name" x="592" y="458.2">metrika_measurement_delete</text>
+<text class="mono name" x="592" y="471.6">metrika_measurement_generate_token</text>
+<text class="mono name" x="592" y="485.0">metrika_offline_conversions_list</text>
+<text class="mono name" x="592" y="498.4">metrika_offline_conversions_get</text>
+<text class="mono name" x="864" y="150.0">metrika_offline_conversions_create</text>
+<text class="mono name" x="864" y="163.4">metrika_operation_create</text>
+<text class="mono name" x="864" y="176.8">metrika_operation_delete</text>
+<text class="mono name" x="864" y="190.2">metrika_operation_update</text>
+<text class="mono name" x="864" y="203.6">metrika_operation_get</text>
+<text class="mono name" x="864" y="217.0">metrika_operation_list</text>
+<text class="mono name" x="864" y="230.4">metrika_schema_create_attributes</text>
+<text class="mono name" x="864" y="243.8">metrika_schema_create_products</text>
+<text class="mono name" x="864" y="257.2">metrika_schema_list_attributes</text>
+<text class="mono name" x="864" y="270.6">metrika_schema_list_last_uploadings</text>
+<text class="mono name" x="864" y="284.0">metrika_schema_list_order_statuses</text>
+<text class="mono name" x="864" y="297.4">metrika_schema_list_predefined_types</text>
+<text class="mono name" x="864" y="310.8">metrika_schema_list_types</text>
+<text class="mono name" x="864" y="324.2">metrika_schema_update</text>
+<text class="mono name" x="864" y="337.6">metrika_schema_create_contact_json</text>
+<text class="mono name" x="864" y="351.0">metrika_schema_create_contacts</text>
+<text class="mono name" x="864" y="364.4">metrika_schema_create_orders</text>
+<text class="mono name" x="864" y="377.8">metrika_schema_create_orders_json</text>
+<text class="mono name" x="864" y="391.2">metrika_schema_create_simple_orders</text>
+<text class="mono name" x="864" y="404.6">metrika_segment_create</text>
+<text class="mono name" x="864" y="418.0">metrika_segment_delete</text>
+<text class="mono name" x="864" y="431.4">metrika_segment_get</text>
+<text class="mono name" x="864" y="444.8">metrika_segment_update</text>
+<text class="mono name" x="864" y="458.2">metrika_user_params_confirm</text>
+<text class="mono name" x="864" y="471.6">metrika_user_params_list</text>
+<text class="mono name" x="864" y="485.0">metrika_user_params_get</text>
+<text class="mono name" x="864" y="498.4">metrika_user_params_create</text>
+<g><line class="strike s" x1="46.5" y1="281.0" x2="152.5" y2="281.0" style="animation-delay:1.10s"/>
+<line class="strike s" x1="46.5" y1="294.4" x2="147.1" y2="294.4" style="animation-delay:1.13s"/>
+<line class="strike s" x1="46.5" y1="307.8" x2="152.5" y2="307.8" style="animation-delay:1.15s"/>
+<line class="strike s" x1="46.5" y1="321.2" x2="163.3" y2="321.2" style="animation-delay:1.18s"/>
+<line class="strike s" x1="46.5" y1="334.6" x2="163.3" y2="334.6" style="animation-delay:1.21s"/>
+<line class="strike s" x1="46.5" y1="348.0" x2="136.2" y2="348.0" style="animation-delay:1.23s"/>
+<line class="strike s" x1="46.5" y1="361.4" x2="141.6" y2="361.4" style="animation-delay:1.26s"/>
+<line class="strike s" x1="46.5" y1="374.8" x2="201.3" y2="374.8" style="animation-delay:1.29s"/>
+<line class="strike s" x1="46.5" y1="388.2" x2="201.3" y2="388.2" style="animation-delay:1.31s"/>
+<line class="strike s" x1="46.5" y1="401.6" x2="185.0" y2="401.6" style="animation-delay:1.34s"/>
+<line class="strike s" x1="46.5" y1="415.0" x2="190.4" y2="415.0" style="animation-delay:1.37s"/>
+<line class="strike s" x1="46.5" y1="428.4" x2="201.3" y2="428.4" style="animation-delay:1.39s"/>
+<line class="strike s" x1="46.5" y1="441.8" x2="157.9" y2="441.8" style="animation-delay:1.42s"/>
+<line class="strike s" x1="46.5" y1="455.2" x2="168.7" y2="455.2" style="animation-delay:1.44s"/>
+<line class="strike s" x1="46.5" y1="468.6" x2="168.7" y2="468.6" style="animation-delay:1.47s"/>
+<line class="strike s" x1="46.5" y1="482.0" x2="141.6" y2="482.0" style="animation-delay:1.50s"/>
+<line class="strike s" x1="46.5" y1="495.4" x2="136.2" y2="495.4" style="animation-delay:1.52s"/>
+<line class="strike s" x1="318.5" y1="147.0" x2="424.5" y2="147.0" style="animation-delay:1.55s"/>
+<line class="strike s" x1="318.5" y1="160.4" x2="489.5" y2="160.4" style="animation-delay:1.58s"/>
+<line class="strike s" x1="318.5" y1="173.8" x2="489.5" y2="173.8" style="animation-delay:1.60s"/>
+<line class="strike s" x1="318.5" y1="187.2" x2="478.7" y2="187.2" style="animation-delay:1.63s"/>
+<line class="strike s" x1="318.5" y1="200.6" x2="473.3" y2="200.6" style="animation-delay:1.66s"/>
+<line class="strike s" x1="318.5" y1="214.0" x2="489.5" y2="214.0" style="animation-delay:1.68s"/>
+<line class="strike s" x1="318.5" y1="227.4" x2="419.1" y2="227.4" style="animation-delay:1.71s"/>
+<line class="strike s" x1="318.5" y1="240.8" x2="451.6" y2="240.8" style="animation-delay:1.74s"/>
+<line class="strike s" x1="318.5" y1="254.2" x2="429.9" y2="254.2" style="animation-delay:1.76s"/>
+<line class="strike s" x1="318.5" y1="267.6" x2="429.9" y2="267.6" style="animation-delay:1.79s"/>
+<line class="strike s" x1="318.5" y1="281.0" x2="413.6" y2="281.0" style="animation-delay:1.82s"/>
+<line class="strike s" x1="318.5" y1="294.4" x2="429.9" y2="294.4" style="animation-delay:1.84s"/>
+<line class="strike s" x1="318.5" y1="307.8" x2="473.3" y2="307.8" style="animation-delay:1.87s"/>
+<line class="strike s" x1="318.5" y1="321.2" x2="473.3" y2="321.2" style="animation-delay:1.90s"/>
+<line class="strike s" x1="318.5" y1="334.6" x2="440.7" y2="334.6" style="animation-delay:1.92s"/>
+<line class="strike s" x1="318.5" y1="348.0" x2="440.7" y2="348.0" style="animation-delay:1.95s"/>
+<line class="strike s" x1="318.5" y1="361.4" x2="440.7" y2="361.4" style="animation-delay:1.98s"/>
+<line class="strike s" x1="318.5" y1="374.8" x2="446.2" y2="374.8" style="animation-delay:2.00s"/>
+<line class="strike s" x1="318.5" y1="388.2" x2="451.6" y2="388.2" style="animation-delay:2.03s"/>
+<line class="strike s" x1="318.5" y1="401.6" x2="440.7" y2="401.6" style="animation-delay:2.06s"/>
+<line class="strike s" x1="318.5" y1="415.0" x2="451.6" y2="415.0" style="animation-delay:2.08s"/>
+<line class="strike s" x1="318.5" y1="428.4" x2="429.9" y2="428.4" style="animation-delay:2.11s"/>
+<line class="strike s" x1="318.5" y1="441.8" x2="424.5" y2="441.8" style="animation-delay:2.13s"/>
+<line class="strike s" x1="318.5" y1="455.2" x2="494.9" y2="455.2" style="animation-delay:2.16s"/>
+<line class="strike s" x1="318.5" y1="468.6" x2="505.8" y2="468.6" style="animation-delay:2.19s"/>
+<line class="strike s" x1="318.5" y1="482.0" x2="543.7" y2="482.0" style="animation-delay:2.21s"/>
+<line class="strike s" x1="318.5" y1="495.4" x2="435.3" y2="495.4" style="animation-delay:2.24s"/>
+<line class="strike s" x1="590.5" y1="147.0" x2="707.3" y2="147.0" style="animation-delay:2.27s"/>
+<line class="strike s" x1="590.5" y1="160.4" x2="707.3" y2="160.4" style="animation-delay:2.29s"/>
+<line class="strike s" x1="590.5" y1="173.8" x2="691.1" y2="173.8" style="animation-delay:2.32s"/>
+<line class="strike s" x1="590.5" y1="187.2" x2="696.5" y2="187.2" style="animation-delay:2.35s"/>
+<line class="strike s" x1="590.5" y1="200.6" x2="696.5" y2="200.6" style="animation-delay:2.37s"/>
+<line class="strike s" x1="590.5" y1="214.0" x2="696.5" y2="214.0" style="animation-delay:2.40s"/>
+<line class="strike s" x1="590.5" y1="227.4" x2="696.5" y2="227.4" style="animation-delay:2.43s"/>
+<line class="strike s" x1="590.5" y1="240.8" x2="745.3" y2="240.8" style="animation-delay:2.45s"/>
+<line class="strike s" x1="590.5" y1="254.2" x2="772.4" y2="254.2" style="animation-delay:2.48s"/>
+<line class="strike s" x1="590.5" y1="267.6" x2="680.2" y2="267.6" style="animation-delay:2.51s"/>
+<line class="strike s" x1="590.5" y1="281.0" x2="701.9" y2="281.0" style="animation-delay:2.53s"/>
+<line class="strike s" x1="590.5" y1="294.4" x2="739.8" y2="294.4" style="animation-delay:2.56s"/>
+<line class="strike s" x1="590.5" y1="307.8" x2="701.9" y2="307.8" style="animation-delay:2.59s"/>
+<line class="strike s" x1="590.5" y1="321.2" x2="739.8" y2="321.2" style="animation-delay:2.61s"/>
+<line class="strike s" x1="590.5" y1="334.6" x2="701.9" y2="334.6" style="animation-delay:2.64s"/>
+<line class="strike s" x1="590.5" y1="348.0" x2="685.6" y2="348.0" style="animation-delay:2.67s"/>
+<line class="strike s" x1="590.5" y1="361.4" x2="691.1" y2="361.4" style="animation-delay:2.69s"/>
+<line class="strike s" x1="590.5" y1="374.8" x2="680.2" y2="374.8" style="animation-delay:2.72s"/>
+<line class="strike s" x1="590.5" y1="388.2" x2="701.9" y2="388.2" style="animation-delay:2.74s"/>
+<line class="strike s" x1="590.5" y1="401.6" x2="701.9" y2="401.6" style="animation-delay:2.77s"/>
+<line class="strike s" x1="590.5" y1="415.0" x2="685.6" y2="415.0" style="animation-delay:2.80s"/>
+<line class="strike s" x1="590.5" y1="428.4" x2="691.1" y2="428.4" style="animation-delay:2.82s"/>
+<line class="strike s" x1="590.5" y1="441.8" x2="701.9" y2="441.8" style="animation-delay:2.85s"/>
+<line class="strike s" x1="590.5" y1="455.2" x2="734.4" y2="455.2" style="animation-delay:2.88s"/>
+<line class="strike s" x1="590.5" y1="468.6" x2="777.8" y2="468.6" style="animation-delay:2.90s"/>
+<line class="strike s" x1="590.5" y1="482.0" x2="766.9" y2="482.0" style="animation-delay:2.93s"/>
+<line class="strike s" x1="590.5" y1="495.4" x2="761.5" y2="495.4" style="animation-delay:2.96s"/>
+<line class="strike s" x1="862.5" y1="147.0" x2="1049.8" y2="147.0" style="animation-delay:2.98s"/>
+<line class="strike s" x1="862.5" y1="160.4" x2="995.6" y2="160.4" style="animation-delay:3.01s"/>
+<line class="strike s" x1="862.5" y1="173.8" x2="995.6" y2="173.8" style="animation-delay:3.04s"/>
+<line class="strike s" x1="862.5" y1="187.2" x2="995.6" y2="187.2" style="animation-delay:3.06s"/>
+<line class="strike s" x1="862.5" y1="200.6" x2="979.3" y2="200.6" style="animation-delay:3.09s"/>
+<line class="strike s" x1="862.5" y1="214.0" x2="984.7" y2="214.0" style="animation-delay:3.12s"/>
+<line class="strike s" x1="862.5" y1="227.4" x2="1038.9" y2="227.4" style="animation-delay:3.14s"/>
+<line class="strike s" x1="862.5" y1="240.8" x2="1028.1" y2="240.8" style="animation-delay:3.17s"/>
+<line class="strike s" x1="862.5" y1="254.2" x2="1028.1" y2="254.2" style="animation-delay:3.20s"/>
+<line class="strike s" x1="862.5" y1="267.6" x2="1055.2" y2="267.6" style="animation-delay:3.22s"/>
+<line class="strike s" x1="862.5" y1="281.0" x2="1049.8" y2="281.0" style="animation-delay:3.25s"/>
+<line class="strike s" x1="862.5" y1="294.4" x2="1060.6" y2="294.4" style="animation-delay:3.28s"/>
+<line class="strike s" x1="862.5" y1="307.8" x2="1001.0" y2="307.8" style="animation-delay:3.30s"/>
+<line class="strike s" x1="862.5" y1="321.2" x2="979.3" y2="321.2" style="animation-delay:3.33s"/>
+<line class="strike s" x1="862.5" y1="334.6" x2="1049.8" y2="334.6" style="animation-delay:3.36s"/>
+<line class="strike s" x1="862.5" y1="348.0" x2="1028.1" y2="348.0" style="animation-delay:3.38s"/>
+<line class="strike s" x1="862.5" y1="361.4" x2="1017.3" y2="361.4" style="animation-delay:3.41s"/>
+<line class="strike s" x1="862.5" y1="374.8" x2="1044.4" y2="374.8" style="animation-delay:3.43s"/>
+<line class="strike s" x1="862.5" y1="388.2" x2="1055.2" y2="388.2" style="animation-delay:3.46s"/>
+<line class="strike s" x1="862.5" y1="401.6" x2="984.7" y2="401.6" style="animation-delay:3.49s"/>
+<line class="strike s" x1="862.5" y1="415.0" x2="984.7" y2="415.0" style="animation-delay:3.51s"/>
+<line class="strike s" x1="862.5" y1="428.4" x2="968.5" y2="428.4" style="animation-delay:3.54s"/>
+<line class="strike s" x1="862.5" y1="441.8" x2="984.7" y2="441.8" style="animation-delay:3.57s"/>
+<line class="strike s" x1="862.5" y1="455.2" x2="1011.8" y2="455.2" style="animation-delay:3.59s"/>
+<line class="strike s" x1="862.5" y1="468.6" x2="995.6" y2="468.6" style="animation-delay:3.62s"/>
+<line class="strike s" x1="862.5" y1="482.0" x2="990.2" y2="482.0" style="animation-delay:3.65s"/>
+<line class="strike s" x1="862.5" y1="495.4" x2="1006.4" y2="495.4" style="animation-delay:3.67s"/></g>
+<g class="fadein"><g opacity="1">
+<text class="sans fignum" x="48" y="588" text-decoration="line-through" fill="#98a1ab">158 301 Б</text>
+<text class="sans arrow" x="205" y="587">→</text>
+<text class="sans fignum" x="238" y="588">32 181 Б</text>
+<text class="sans figkey" x="48" y="608">манифест по умолчанию · замер сериализацией ответа tools/list</text>
+<text class="sans figkey" x="1152" y="608" text-anchor="end">npx -y yandex-metrika-mcp-server@3</text>
+</g></g>
+</svg>

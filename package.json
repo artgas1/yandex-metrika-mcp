@@ -16,7 +16,8 @@
     "protocol": "tsc && node --test test/protocol.test.mjs",
     "prepublishOnly": "npm test",
     "spec:diff": "node tools/diff-spec.mjs",
-    "mcpb": "node tools/build-mcpb.mjs --pack"
+    "mcpb": "node tools/build-mcpb.mjs --pack",
+    "graphic": "node tools/build-graphic.mjs --gif"
   },
   "keywords": [
     "yandex",

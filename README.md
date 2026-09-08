@@ -11,6 +11,8 @@ mcp-name: io.github.artgas1/yandex-metrika-mcp-server
 
 *[English](./README.en.md)*
 
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/surface.svg" alt="tools/list: из 108 инструментов Яндекс Метрики по умолчанию объявляются 10, остальные 98 вычеркнуты; манифест 158 301 байт против 32 181" width="100%">
+
 ```bash
 npx -y yandex-metrika-mcp-server
 ```

@@ -4,3 +4,5 @@ node_modules
 .cursor
 build
 .cache
+.mcpb-build
+*.mcpb

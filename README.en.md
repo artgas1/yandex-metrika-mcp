@@ -164,6 +164,37 @@ lookups a report cannot be built without (`metrika_counter_list`, `metrika_count
 `metrika_goal_list`, `metrika_segment_list`). The size ceiling is asserted by a test, so the
 manifest cannot get more expensive silently.
 
+## Privacy Policy
+
+The server collects nothing about you, stores nothing and transmits nothing anywhere. No
+telemetry, no analytics, no call-home — none of it exists: there is no infrastructure behind
+this package at all.
+
+The only network destination is `https://api-metrika.yandex.net`. The token is read from
+`YANDEX_API_KEY` into process memory and is never written anywhere: not to a file, not to
+stdout, not into a response body. Report data is never cached to disk and does not outlive the
+process.
+
+The data you request is processed by Yandex as the operator of Metrika, and
+[their policy](https://yandex.com/legal/confidential/) governs that, not this one.
+
+Full text: [`PRIVACY.md`](./PRIVACY.md).
+
+## One-file install (MCPB)
+
+For Claude Desktop and other clients that understand MCP bundles there is a `.mcpb` file
+attached to each [release](https://github.com/artgas1/yandex-metrika-mcp/releases). Open it,
+paste your token into the install dialog, done.
+
+The bundle is built from the same code at the same tag (`npm run mcpb`), and its manifest is
+**generated** from `package.json` and the tool profile rather than hand-written — so it has
+nowhere to drift, and a test asserts it.
+
+⚠️ **Writes cannot be enabled through the bundle.** The cost of a wrong call is a deleted
+counter or goal with no way to restore its history, and that does not belong behind a toggle in
+an install dialog. If you need writes, install from npm and turn them on deliberately with an
+environment variable.
+
 ## Security
 
 - **Writes are off by default.** Fourteen `DELETE` methods and five deleting `POST` methods

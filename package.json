@@ -1,7 +1,7 @@
 {
   "name": "yandex-metrika-mcp-server",
   "mcpName": "io.github.artgas1/yandex-metrika-mcp-server",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "MCP-сервер к API Яндекс Метрики: 108 методов, узкая поверхность по умолчанию (Stat, Management, Logs)",
   "main": "./build/index.js",
   "type": "module",
@@ -15,7 +15,8 @@
     "inspector": "npx @modelcontextprotocol/inspector node ./build/index.js",
     "protocol": "tsc && node --test test/protocol.test.mjs",
     "prepublishOnly": "npm test",
-    "spec:diff": "node tools/diff-spec.mjs"
+    "spec:diff": "node tools/diff-spec.mjs",
+    "mcpb": "node tools/build-mcpb.mjs --pack"
   },
   "keywords": [
     "yandex",
@@ -50,6 +51,7 @@
     "README.md",
     "README.en.md",
     "CHANGELOG.md",
+    "PRIVACY.md",
     "SECURITY.md",
     "LICENSE"
   ],

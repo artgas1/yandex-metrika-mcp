@@ -45,8 +45,18 @@ async function withStub(run) {
   }
 }
 
+/**
+ * Каталожные проверки ниже говорят про ВСЕ методы спеки, поэтому им нужен полный
+ * профиль. По умолчанию сервер объявляет `core` — это отдельный контракт, и он
+ * проверяется в test/surface.test.mjs.
+ */
 async function connected(env, run) {
-  const client = startServer({ YANDEX_API_KEY: 'stub-token', ...env });
+  const client = startServer({
+    YANDEX_API_KEY: 'stub-token',
+    METRIKA_PROFILE: 'all',
+    METRIKA_ALLOW_WRITES: '1',
+    ...env,
+  });
   try {
     const info = await client.initialize();
     return await run(client, info);
@@ -160,13 +170,21 @@ test('ошибка API возвращается как isError, а не как �
   });
 });
 
-test('меняющие данные инструменты по умолчанию отказывают', async () => {
+test('меняющие данные инструменты не объявлены, пока запись выключена', async () => {
   await withStub(async (base, seen) => {
-    await connected({ METRIKA_API_BASE: base }, async (client) => {
+    await connected({ METRIKA_API_BASE: base, METRIKA_ALLOW_WRITES: '' }, async (client) => {
       const before = seen.length;
+      const names = (await client.listAllTools()).map((t) => t.name);
+      assert.ok(
+        !names.includes('metrika_counter_delete'),
+        'удаляющий инструмент не должен попадать в tools/list без METRIKA_ALLOW_WRITES',
+      );
+      // Объявлять и отказывать на вызове — худший вариант: контекст платится
+      // полностью, а позвать нельзя. Проверяем именно отсутствие в манифесте,
+      // а следом — что вызов отбивается самим протоколом.
       const res = await client.callTool('metrika_counter_delete', { counterId: '1' });
       assert.equal(res.isError, true);
-      assert.match(res.content[0].text, /writes_disabled/);
+      assert.match(res.content[0].text, /not found/);
       assert.equal(seen.length, before, 'до API запрос дойти был не должен');
     });
   });
@@ -208,12 +226,12 @@ test('METRIKA_TOOLS сужает набор, не ломая сервер', asyn
 });
 
 test('в stdout не попадает ничего, кроме JSON-RPC', async () => {
-  await connected({}, async (client) => {
+  await connected({ METRIKA_PROFILE: 'core', METRIKA_ALLOW_WRITES: '' }, async (client) => {
     await client.listAllTools();
     // Стартовая сводка и предупреждения обязаны идти в stderr: один print в
     // stdout ломает stdio-транспорт целиком.
-    assert.match(client.stderr, /yandex-metrika-mcp \d+\.\d+\.\d+: инструментов/);
-    assert.match(client.stderr, /заблокированы/);
+    assert.match(client.stderr, /yandex-metrika-mcp \d+\.\d+\.\d+: METRIKA_PROFILE=core, инструментов/);
+    assert.match(client.stderr, /не объявлены/);
   });
 });
 

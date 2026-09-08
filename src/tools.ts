@@ -466,9 +466,20 @@ export interface RegisterOptions {
 interface ToolConfig {
   title: string;
   description: string;
-  inputSchema: Record<string, ZodTypeAny>;
+  inputSchema: Record<string, ZodTypeAny> | ZodTypeAny;
   annotations: Annotations;
 }
+
+/**
+ * Схема для инструмента без параметров.
+ *
+ * Пустую форму `{}` SDK трактует как «схемы нет» и подставляет свой
+ * `EMPTY_OBJECT_JSON_SCHEMA` — без `additionalProperties: false`. Три
+ * беспараметрических инструмента из-за этого объявляли схему, разрешающую любые
+ * лишние ключи, то есть ровно ту, на которой модель придумывает аргументы.
+ * Явный `z.object({}).strict()` идёт другим путём и даёт запрет.
+ */
+const NO_PARAMS = z.object({}).strict();
 
 interface ToolResult {
   isError?: boolean;
@@ -515,7 +526,10 @@ export function registerAll(server: RegistrarLike, spec: Spec, token: string, op
           `${method.title ?? method.indexTitle}. ${method.description ?? ''}`.trim() +
           ` [${method.http} ${method.url}] Документация: ${method.docUrl}` +
           (gated ? ` ЗАПИСЬ ВЫКЛЮЧЕНА: вызов вернёт отказ, пока не задан METRIKA_ALLOW_WRITES=1.` : ''),
-        inputSchema: buildInputSchema(method, spec.entities),
+        inputSchema: (() => {
+          const shape = buildInputSchema(method, spec.entities);
+          return Object.keys(shape).length ? shape : NO_PARAMS;
+        })(),
         annotations,
       },
       async (args: Record<string, unknown>) => {

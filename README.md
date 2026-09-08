@@ -11,7 +11,7 @@ mcp-name: io.github.artgas1/yandex-metrika-mcp-server
 
 *[English](./README.en.md)*
 
-<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/surface.svg" alt="tools/list: из 108 инструментов Яндекс Метрики по умолчанию объявляются 10, остальные 98 вычеркнуты; манифест 158 301 байт против 32 181" width="100%">
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/case.svg" alt="Слева семь шагов в интерфейсе Метрики, справа тот же результат одним вопросом: таблица источников с визитами, целями и конверсией" width="100%">
 
 ```bash
 npx -y yandex-metrika-mcp-server
@@ -190,6 +190,8 @@ YANDEX_API_KEY=<OAuth-токен с scope direct:api / metrika> npm start
 разойтись с реальностью ему негде, и это проверено тестом.
 
 ### Почему по умолчанию не всё
+
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/surface.svg" alt="Из 108 инструментов по умолчанию объявляются 10, остальные 98 вычеркнуты" width="100%">
 
 Описания объявленных инструментов лежат в контексте модели, когда клиент их загрузил. Это
 цена сервера, которую платят за сам факт подключения, а не за вызовы. Замер `tools/list`

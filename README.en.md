@@ -9,7 +9,7 @@ mcp-name: io.github.artgas1/yandex-metrika-mcp-server
 [![CI](https://github.com/artgas1/yandex-metrika-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/artgas1/yandex-metrika-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/surface.svg" alt="tools/list: 10 of 108 Yandex Metrika tools exposed by default, the other 98 struck out" width="100%">
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/case.svg" alt="Left: seven steps in the Metrika UI. Right: the same result from one question — a table of sources with visits, goals and conversion" width="100%">
 
 *[Русская версия](./README.md) — the fuller one; this page is a faithful summary.*
 
@@ -183,6 +183,8 @@ The listing is built from the same filter the tools are registered through, so i
 to drift, and a test asserts it.
 
 ### Why not everything by default
+
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/surface.svg" alt="10 of 108 tools exposed by default, the other 98 struck out" width="100%">
 
 The descriptions of every exposed tool sit in the model's context on **every** turn, whether
 you call them or not. It is the one cost of a server that is always paid. Measured

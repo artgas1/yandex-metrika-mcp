@@ -9,16 +9,43 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, rmSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 
-/** Список файлов архива — спрашиваем у самого npm, а не угадываем по `files`. */
+let cachedFiles = null;
+
+/**
+ * Состав архива читаем ИЗ САМОГО АРХИВА, а не из `npm pack --json`.
+ *
+ * Форма этого JSON у npm непостоянна: тест, написанный под 10.x
+ * (`JSON.parse(out)[0].files`), упал на 12.0.2 с «Cannot read properties of
+ * undefined» — причём во время публикации, в prepublishOnly, то есть ровно
+ * тогда, когда ошибаться дороже всего. Список файлов в tar одинаков у любой
+ * версии.
+ */
 function packedFiles() {
-  const out = execFileSync('npm', ['pack', '--dry-run', '--json'], { cwd: root, encoding: 'utf8' });
-  return JSON.parse(out)[0].files.map((f) => f.path);
+  if (cachedFiles) return cachedFiles;
+  const dir = mkdtempSync(join(tmpdir(), 'packcheck-'));
+  try {
+    execFileSync('npm', ['pack', '--pack-destination', dir], {
+      cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    const tgz = readdirSync(dir).find((f) => f.endsWith('.tgz'));
+    if (!tgz) throw new Error('npm pack не создал архив');
+    const list = execFileSync('tar', ['-tzf', join(dir, tgz)], { encoding: 'utf8' });
+    // В архиве всё лежит под package/ — этот префикс срезаем.
+    cachedFiles = list.split('\n').filter(Boolean)
+      .map((f) => f.replace(/^package\//, ''))
+      .filter((f) => !f.endsWith('/'));
+    return cachedFiles;
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 }
 
 test('в архив не попадает ничего лишнего', () => {

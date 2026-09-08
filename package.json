@@ -1,0 +1,64 @@
+{
+  "name": "yandex-metrika-mcp-server",
+  "mcpName": "io.github.artgas1/yandex-metrika-mcp-server",
+  "version": "2.2.3",
+  "description": "MCP-сервер к API Яндекс Метрики — полное покрытие (Stat, Management, Logs), 108 методов",
+  "main": "./build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./build/index.js",
+    "spec:fetch": "node tools/fetch-docs.mjs",
+    "spec:build": "node tools/parse-spec.mjs",
+    "test": "tsc && node --test \"test/*.test.mjs\"",
+    "smoke": "node tools/smoke.mjs",
+    "inspector": "npx @modelcontextprotocol/inspector node ./build/index.js",
+    "protocol": "tsc && node --test test/protocol.test.mjs",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "yandex",
+    "metrika",
+    "yandex-metrika",
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "analytics",
+    "web-analytics"
+  ],
+  "author": "Artem Gasparyan",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.14",
+    "typescript": "^5.8.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artgas1/yandex-metrika-mcp.git"
+  },
+  "bin": {
+    "yandex-metrika-mcp": "build/index.js"
+  },
+  "files": [
+    "build",
+    "spec",
+    "README.md",
+    "README.en.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "contributors": [
+    "Vadim Bezymianyi (upstream author of yandex-metrika-mcp)"
+  ],
+  "homepage": "https://github.com/artgas1/yandex-metrika-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/artgas1/yandex-metrika-mcp/issues"
+  }
+}

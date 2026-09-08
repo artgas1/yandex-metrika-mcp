@@ -1,0 +1,145 @@
+name: Publish
+
+# Выпуск идёт по тегу и только по нему: тег — это единственная точка, где
+# принято решение «эта сборка уходит наружу».
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  # Тесты гоняются заново на том же коммите, что и публикуется. Зелёный CI на
+  # ветке не доказывает, что зелёный именно тег.
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm test
+      - run: npm audit --audit-level=high
+      - name: Версия в package.json совпадает с тегом
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./package.json').version")
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::тег v$TAG, а в package.json $PKG — публиковать нечего"
+            exit 1
+          fi
+          SRV=$(node -p "require('./server.json').version")
+          if [ "$TAG" != "$SRV" ]; then
+            echo "::error::тег v$TAG, а в server.json $SRV — реестр получит не ту версию"
+            exit 1
+          fi
+          echo "версия $PKG сходится в package.json, server.json и теге"
+          # Владение npm-пакетом реестр проверяет по полю mcpName в package.json.
+          # Маркер mcp-name в README — механизм PyPI, для npm он не читается,
+          # и без этой сверки расхождение всплывает уже ПОСЛЕ выхода пакета.
+          MCPNAME=$(node -p "require('./package.json').mcpName || ''")
+          SRVNAME=$(node -p "require('./server.json').name")
+          if [ "$MCPNAME" != "$SRVNAME" ]; then
+            echo "::error::package.json mcpName='$MCPNAME', а server.json name='$SRVNAME' — реестр отвергнет заявку"
+            exit 1
+          fi
+          echo "mcpName сходится с именем в реестре: $MCPNAME"
+      # Манифест реестра проверяем ДО публикации в npm: публикация необратима,
+      # а плохой манифест иначе всплывёт следующим шагом — когда пакет уже вышел.
+      - name: server.json валиден по схеме реестра
+        run: |
+          set -euo pipefail
+          PLATFORM=$(uname -s | tr '[:upper:]' '[:lower:]')
+          ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_${PLATFORM}_${ARCH}.tar.gz" \
+            | tar xz mcp-publisher
+          ./mcp-publisher validate
+
+  npm:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      # registry-url здесь НЕ указываем: он пишет _authToken в .npmrc и ломает OIDC.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # NPM_TOKEN нужен только на первый выпуск, пока пакета нет на npm и
+      # доверенного издателя настроить не на чем. После первого выпуска секрет
+      # удаляется, и остаётся чистый OIDC.
+      # npm отвечает на неавторизованный publish кодом 404, а не 401: реестр не
+      # подтверждает существование пакета тому, кто не имеет на него прав.
+      # Поэтому личность проверяем ОТДЕЛЬНЫМ шагом — иначе любой отказ прав
+      # читается как «пакета нет», и чинят не то.
+      - name: Кто мы для npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -uo pipefail
+          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
+            echo "токена нет — публикуем через доверенного издателя (OIDC)"
+            exit 0
+          fi
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          if WHO=$(npm whoami --registry https://registry.npmjs.org/ 2>&1); then
+            echo "npm принял токен, пользователь: $WHO"
+          else
+            echo "::error::npm НЕ принял токен: $WHO"
+            echo "::error::Проверь три вещи, в этом порядке:"
+            echo "::error::  1) токен именно с npmjs.com, а не с GitHub Packages"
+            echo "::error::  2) права read-write, а не read-only"
+            echo "::error::  3) если токен granular — он должен покрывать ВСЕ пакеты:"
+            echo "::error::     пакета yandex-metrika-mcp-server ещё нет, и токен,"
+            echo "::error::     привязанный к списку существующих, создать его не может"
+            exit 1
+          fi
+
+      # --provenance ставится в обеих ветках: подпись цепочки поставки зависит от
+      # id-token в GitHub Actions, а не от способа авторизации в npm.
+      - name: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -n "${NODE_AUTH_TOKEN:-}" ]; then
+            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          fi
+          npm publish --provenance --access public
+
+  registry:
+    needs: npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      # Реестр проверяет владение так: читает README пакета с npm и ищет строку
+      # `mcp-name: io.github.<user>/<package>`. Без паузы на распространение
+      # пакета публикация в реестр падает на валидации.
+      - name: Дать npm распространить пакет
+        run: sleep 120
+      - name: Опубликовать в Official MCP Registry
+        run: |
+          set -euo pipefail
+          PLATFORM=$(uname -s | tr '[:upper:]' '[:lower:]')
+          ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_${PLATFORM}_${ARCH}.tar.gz" \
+            | tar xz mcp-publisher
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
+      - name: Проверить, что реестр действительно отдаёт сервер
+        run: |
+          set -euo pipefail
+          sleep 15
+          curl -fsS "https://registry.modelcontextprotocol.io/v0/servers?search=yandex-metrika-mcp-server" \
+            | tee /tmp/registry.json
+          grep -q 'io.github.artgas1/yandex-metrika-mcp-server' /tmp/registry.json

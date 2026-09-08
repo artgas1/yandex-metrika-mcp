@@ -1,0 +1,48 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.artgas1/yandex-metrika-mcp-server",
+  "description": "Полное покрытие API Яндекс Метрики: Stat, Management и Logs — 108 методов, 108 инструментов",
+  "repository": {
+    "url": "https://github.com/artgas1/yandex-metrika-mcp",
+    "source": "github"
+  },
+  "version": "2.2.3",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "yandex-metrika-mcp-server",
+      "version": "2.2.3",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "YANDEX_API_KEY",
+          "description": "OAuth-токен Яндекса с доступом к Метрике. Без него сервер не стартует.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "METRIKA_ALLOW_WRITES",
+          "description": "1 разрешает вызовы, меняющие данные. По умолчанию 57 таких инструментов видны, но возвращают отказ.",
+          "isRequired": false
+        },
+        {
+          "name": "METRIKA_TOOLS",
+          "description": "Отбор инструментов через запятую: раздел (stat, logs, management), префикс имени или точное имя. Пусто — все 108.",
+          "isRequired": false
+        },
+        {
+          "name": "METRIKA_TRAFFIC_FILTER",
+          "description": "Условие сегментации, которое добавляется к отчётам Stat. По умолчанию ym:s:isRobot=='no'.",
+          "isRequired": false
+        },
+        {
+          "name": "METRIKA_MAX_OUTPUT_CHARS",
+          "description": "Потолок длины ответа одного вызова в символах. По умолчанию 120000.",
+          "isRequired": false
+        }
+      ]
+    }
+  ]
+}

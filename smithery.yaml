@@ -1,0 +1,24 @@
+runtime: "container"
+startCommand:
+  type: "stdio"
+  command: ["npx", "-y", "yandex-metrika-mcp-server"]
+  configSchema:
+    type: object
+    required: ["YANDEX_API_KEY"]
+    properties:
+      YANDEX_API_KEY:
+        type: string
+        format: password
+        description: "Яндекс OAuth token with Metrika access. Required — the server refuses to start without it."
+      METRIKA_ALLOW_WRITES:
+        type: string
+        description: "Set to 1 to allow data-changing calls. Left unset, the 57 mutating tools stay visible but return a refusal."
+      METRIKA_TOOLS:
+        type: string
+        description: "Comma-separated tool filter: an API section (stat, logs, management), a name prefix, or an exact tool name. Empty means all 108."
+      METRIKA_TRAFFIC_FILTER:
+        type: string
+        description: "Segmentation expression added to Stat reports. Defaults to ym:s:isRobot=='no'."
+      METRIKA_MAX_OUTPUT_CHARS:
+        type: string
+        description: "Per-call response size cap in characters. Defaults to 120000."

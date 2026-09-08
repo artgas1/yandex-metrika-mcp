@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      # tsc входит в npm test, но отдельный шаг даёт понятный красный на типах,
+      # а не «тесты не запустились».
+      - run: npx tsc --noEmit
+      - run: npm test
+      # Зависимости с известными уязвимостями — тоже отказ, а не примечание.
+      - run: npm audit --audit-level=high
+
+  # Отдельной джобой, потому что она ходит в сеть за llms.txt: её отказ означает
+  # «Яндекс изменил состав API», а не «наш код сломан», и путать эти два повода
+  # для красного нельзя.
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Состав API не разошёлся с документацией
+        shell: bash
+        run: |
+          # pipefail обязателен: без него код возврата берётся у tee, и джоба
+          # оставалась зелёной при любом падении теста. Файл здесь один —
+          # остальные требуют собранного build/ и проверяются в джобе test.
+          set -o pipefail
+          node --test "test/spec.test.mjs" 2>&1 | tee /tmp/out.txt
+      - name: Дрейф обязан быть проверен, а не пропущен
+        run: |
+          if grep -q 'индекс недоступен по сети' /tmp/out.txt; then
+            echo "::error::тест на дрейф пропущен — llms.txt не скачался, состав API не сверен"
+            exit 1
+          fi

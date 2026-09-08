@@ -1,7 +1,7 @@
 {
   "name": "yandex-metrika-mcp-server",
   "mcpName": "io.github.artgas1/yandex-metrika-mcp-server",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "MCP-сервер к API Яндекс Метрики: 108 методов, узкая поверхность по умолчанию (Stat, Management, Logs)",
   "main": "./build/index.js",
   "type": "module",

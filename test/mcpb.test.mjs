@@ -34,10 +34,13 @@ test('версия в манифесте равна версии пакета', 
 
 test('объявленные инструменты совпадают с профилем по умолчанию', async () => {
   const { CORE_TOOLS } = await import(join(root, 'build/profiles.js'));
+  const { CATALOG_TOOL } = await import(join(root, 'build/catalog.js'));
+  // Сверяем с тем, что реально окажется в tools/list, а не только с CORE_TOOLS:
+  // служебный каталог объявляется наравне с методами API.
   assert.deepEqual(
     manifest.tools.map((t) => t.name).sort(),
-    [...CORE_TOOLS].sort(),
-    'список инструментов бандла разошёлся с CORE_TOOLS',
+    [...CORE_TOOLS, CATALOG_TOOL].sort(),
+    'список инструментов бандла разошёлся с тем, что объявляет сервер',
   );
   assert.ok(
     manifest.tools.every((t) => typeof t.description === 'string' && t.description.length > 0),

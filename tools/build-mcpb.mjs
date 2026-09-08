@@ -30,6 +30,7 @@ const spec = JSON.parse(readFileSync(join(root, 'spec/metrika-api.json'), 'utf8'
 // Список инструментов профиля по умолчанию берём из самого профиля, а не из
 // копии: разойтись им тогда физически негде.
 const { CORE_TOOLS } = await import(join(root, 'build/profiles.js'));
+const { CATALOG_TOOL } = await import(join(root, 'build/catalog.js'));
 const byTool = new Map(spec.methods.map((m) => [m.tool, m]));
 
 const missing = CORE_TOOLS.filter((t) => !byTool.has(t));
@@ -87,10 +88,17 @@ const manifest = {
       },
     },
   },
-  tools: CORE_TOOLS.map((tool) => ({
-    name: tool,
-    description: byTool.get(tool).title ?? byTool.get(tool).indexTitle ?? tool,
-  })),
+  // Перечисляем ровно то, что окажется в tools/list профиля по умолчанию, —
+  // включая служебный каталог. Манифест, объявляющий меньше, чем сервер отдаёт,
+  // недосчитывает ровно тот инструмент, который читателю каталога интереснее
+  // прочих: он рассказывает, что ещё умеет сервер.
+  tools: [
+    ...CORE_TOOLS.map((tool) => ({
+      name: tool,
+      description: byTool.get(tool).title ?? byTool.get(tool).indexTitle ?? tool,
+    })),
+    { name: CATALOG_TOOL, description: 'Что объявлено сейчас, что скрыто профилем и как это включить' },
+  ],
   // Набор зависит от профиля, выбранного при установке, — объявляем это честно.
   tools_generated: true,
   user_config: {

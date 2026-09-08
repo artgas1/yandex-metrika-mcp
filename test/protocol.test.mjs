@@ -18,6 +18,14 @@ const SPEC = JSON.parse(
 );
 const EXPECTED_TOOLS = SPEC.methods.length;
 
+/**
+ * Каталог — не метод API, а служебный инструмент про сам сервер. Проверки
+ * покрытия и аннотаций считают методы Метрики, поэтому его отсюда убираем;
+ * его собственный контракт живёт в test/catalog.test.mjs.
+ */
+const CATALOG = 'metrika_catalog_list';
+const apiTools = (tools) => tools.filter((t) => t.name !== CATALOG);
+
 const STAT_ROWS = [
   { dimensions: [{ name: 'Прямые заходы' }], metrics: [42] },
   { dimensions: [{ name: 'Поиск' }], metrics: [17] },
@@ -75,8 +83,10 @@ test('сервер отвечает на initialize и представляет�
 
 test('tools/list отдаёт все методы спеки, с описанием и схемой', async () => {
   await connected({}, async (client) => {
-    const tools = await client.listAllTools();
+    const all = await client.listAllTools();
+    const tools = apiTools(all);
     assert.equal(tools.length, EXPECTED_TOOLS, `ожидали ${EXPECTED_TOOLS} инструментов`);
+    assert.equal(all.length - tools.length, 1, 'служебный инструмент ровно один — каталог');
 
     const names = new Set(tools.map((t) => t.name));
     assert.equal(names.size, tools.length, 'имена инструментов обязаны быть уникальны');
@@ -93,10 +103,11 @@ test('tools/list отдаёт все методы спеки, с описани�
 
 test('у каждого инструмента проставлены аннотации, и они совпадают с глаголом', async () => {
   await connected({}, async (client) => {
-    const tools = await client.listAllTools();
-    const byName = new Map(tools.map((t) => [t.name, t]));
+    const all = await client.listAllTools();
+    const byName = new Map(all.map((t) => [t.name, t]));
 
-    for (const t of tools) {
+    // Полнота аннотаций требуется от ВСЕХ инструментов, включая служебный.
+    for (const t of all) {
       assert.ok(t.annotations, `${t.name}: аннотаций нет — клиент не отличит чтение от удаления`);
       for (const key of ['readOnlyHint', 'destructiveHint', 'idempotentHint', 'openWorldHint']) {
         assert.equal(typeof t.annotations[key], 'boolean', `${t.name}: нет ${key}`);
@@ -126,7 +137,9 @@ test('у каждого инструмента проставлены аннот
       assert.equal(byName.get(tool).annotations.destructiveHint, true, `${tool}: удаление под POST не помечено`);
     }
 
-    const readOnly = tools.filter((t) => t.annotations.readOnlyHint).length;
+    // Счёт read-only ведём по методам API: каталог тоже read-only, но он не GET
+    // и в этой сверке с глаголами участвовать не должен.
+    const readOnly = apiTools(all).filter((t) => t.annotations.readOnlyHint).length;
     assert.equal(readOnly, SPEC.methods.filter((m) => m.http === 'GET').length);
   });
 });
@@ -218,7 +231,7 @@ test('секрет из строки запроса не попадает в о�
 
 test('METRIKA_TOOLS сужает набор, не ломая сервер', async () => {
   await connected({ METRIKA_TOOLS: 'stat,logs' }, async (client) => {
-    const tools = await client.listAllTools();
+    const tools = apiTools(await client.listAllTools());
     const expected = SPEC.methods.filter((m) => m.api === 'stat' || m.api === 'logs').length;
     assert.equal(tools.length, expected);
     assert.ok(tools.every((t) => t.name.startsWith('metrika_')));

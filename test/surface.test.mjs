@@ -40,7 +40,7 @@ test('набор по умолчанию — core, и он умещается в
   const { tools, bytes } = await surface({});
   assert.deepEqual(
     tools.map((t) => t.name).sort(),
-    [...CORE_TOOLS].sort(),
+    [...CORE_TOOLS, 'metrika_catalog_list'].sort(),
     'умолчание разошлось со списком CORE_TOOLS',
   );
   assert.ok(tools.length <= CORE_TOOLS_MAX, `по умолчанию объявлено ${tools.length} инструментов`);

@@ -17,7 +17,7 @@
     "prepublishOnly": "npm test",
     "spec:diff": "node tools/diff-spec.mjs",
     "mcpb": "node tools/build-mcpb.mjs --pack",
-    "graphic": "node tools/build-graphic.mjs --gif"
+    "graphic": "node tools/build-graphic.mjs --gif && node tools/build-case.mjs --gif"
   },
   "keywords": [
     "yandex",

@@ -72,47 +72,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # NPM_TOKEN нужен только на первый выпуск, пока пакета нет на npm и
-      # доверенного издателя настроить не на чем. После первого выпуска секрет
-      # удаляется, и остаётся чистый OIDC.
-      # npm отвечает на неавторизованный publish кодом 404, а не 401: реестр не
-      # подтверждает существование пакета тому, кто не имеет на него прав.
-      # Поэтому личность проверяем ОТДЕЛЬНЫМ шагом — иначе любой отказ прав
-      # читается как «пакета нет», и чинят не то.
-      - name: Кто мы для npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          set -uo pipefail
-          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
-            echo "токена нет — публикуем через доверенного издателя (OIDC)"
-            exit 0
-          fi
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-          if WHO=$(npm whoami --registry https://registry.npmjs.org/ 2>&1); then
-            echo "npm принял токен, пользователь: $WHO"
-          else
-            echo "::error::npm НЕ принял токен: $WHO"
-            echo "::error::Проверь три вещи, в этом порядке:"
-            echo "::error::  1) токен именно с npmjs.com, а не с GitHub Packages"
-            echo "::error::  2) права read-write, а не read-only"
-            echo "::error::  3) если токен granular — он должен покрывать ВСЕ пакеты:"
-            echo "::error::     пакета yandex-metrika-mcp-server ещё нет, и токен,"
-            echo "::error::     привязанный к списку существующих, создать его не может"
-            exit 1
-          fi
-
-      # --provenance ставится в обеих ветках: подпись цепочки поставки зависит от
-      # id-token в GitHub Actions, а не от способа авторизации в npm.
+      # Авторизация — доверенный издатель npm (OIDC), связанный с этим
+      # репозиторием и именно с этим файлом workflow. Долгоживущего токена в
+      # репозитории нет и быть не должно: он не нужен и его нечему утечь.
+      #
+      # Имя файла workflow — часть связи на стороне npm. Переименуешь его или
+      # перенесёшь публикацию в другой файл — публикация начнёт отказывать,
+      # пока связь не обновлена на npmjs.com.
       - name: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          set -euo pipefail
-          if [ -n "${NODE_AUTH_TOKEN:-}" ]; then
-            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-          fi
-          npm publish --provenance --access public
+        run: npm publish --provenance --access public
 
   registry:
     needs: npm
@@ -122,9 +90,9 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      # Реестр проверяет владение так: читает README пакета с npm и ищет строку
-      # `mcp-name: io.github.<user>/<package>`. Без паузы на распространение
-      # пакета публикация в реестр падает на валидации.
+      # Владение npm-пакетом реестр проверяет по полю mcpName в package.json —
+      # то есть читает сам пакет с npm. Пока версия не разошлась по CDN, читать
+      # нечего, и заявка падает на валидации. Отсюда пауза.
       - name: Дать npm распространить пакет
         run: sleep 120
       - name: Опубликовать в Official MCP Registry

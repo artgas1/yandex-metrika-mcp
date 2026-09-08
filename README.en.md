@@ -95,7 +95,7 @@ assembled by a line scanner over those classes rather than a markdown parser.
 ```bash
 npm run spec:fetch   # download llms.txt and 108 method pages into .cache/docs/
 npm run spec:build   # parse them into spec/metrika-api.json
-npm test             # spec, tool schemas and MCP protocol
+npm test             # 67 tests: spec, schemas, MCP protocol, tool surface and its budget
 npm run protocol     # protocol tests only
 npm run smoke        # live calls against the API (needs YANDEX_API_KEY)
 ```
@@ -105,6 +105,19 @@ compares it against the live `llms.txt`: if Yandex adds or removes a method, the
 
 Parsing is pinned to a generator version (`Diplodoc Platform v5.57.3`): all the semantics hang
 off its classes, so a version mismatch stops the spec build instead of quietly corrupting it.
+
+### What the tests do NOT cover
+
+**Tool-selection evals.** This is the one check neither a schema snapshot nor a protocol test
+can stand in for: descriptions can be syntactically flawless and the model still reaches for
+the wrong tool. Tests cannot see it by construction — they call a tool by name, so the choice
+has already been made for the model.
+
+The omission here is deliberate, not forgotten. The default profile is ten tools, six of which
+are Stat reports that differ in response shape rather than subject, so there is little for a
+model to confuse. An eval becomes necessary when the default surface widens, or when tools
+with overlapping descriptions enter it — and then it must be written **before** the widening,
+not after.
 
 ## Setup
 

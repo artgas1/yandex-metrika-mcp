@@ -12,8 +12,8 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
@@ -64,9 +64,9 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # registry-url здесь НЕ указываем: он пишет _authToken в .npmrc и ломает OIDC.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
@@ -114,7 +114,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # Владение npm-пакетом реестр проверяет по полю mcpName в package.json —
       # то есть читает сам пакет с npm. Пока версия не разошлась по CDN, читать
       # нечего, и заявка падает на валидации. Отсюда пауза.

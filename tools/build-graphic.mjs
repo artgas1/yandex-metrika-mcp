@@ -42,6 +42,9 @@ const C = {
   soft: '#4c545e',
   muted: '#98a1ab',
   pen: '#c8362a',
+  // Фирменный красный Яндекса — только меткой в шапке: чужой знак акцентом,
+  // а не заливкой. Вычерки остаются корректорскими, это другая роль.
+  ya: '#fc3f1d',
   blue: '#2a4a7f',
   keep: '#cfdcea',
   rule: '#d2d7dd',
@@ -75,6 +78,8 @@ function head(extraStyle) {
   .name { font-size: 9px; fill: ${C.muted}; }
   .name.keep { fill: ${C.ink}; font-weight: 600; }
   .eyebrow { font-size: 11.5px; letter-spacing: 1.6px; fill: ${C.muted}; font-weight: 600; }
+  .brand { font-size: 14px; fill: ${C.ink}; font-weight: 600; }
+  .disc { font-size: 12px; fill: ${C.muted}; }
   .h1 { font-size: 41px; font-weight: 800; fill: ${C.ink}; letter-spacing: -.8px; }
   .lede { font-size: 15px; fill: ${C.soft}; }
   .fignum { font-size: 27px; font-weight: 800; fill: ${C.ink}; letter-spacing: -.4px; }
@@ -85,7 +90,9 @@ ${extraStyle}
 </style>
 <rect width="${W}" height="${H}" fill="${C.paper}"/>
 <rect x="28" y="118" width="${W - 56}" height="416" fill="${C.panel}" stroke="${C.rule}"/>
-<text class="sans eyebrow" x="48" y="46">TOOLS/LIST · ЯНДЕКС МЕТРИКА · MCP</text>
+<rect x="48" y="32" width="11" height="11" rx="1.5" fill="${C.ya}"/>
+<text class="sans brand" x="67" y="42">Яндекс Метрика</text>
+<text class="sans eyebrow" x="182" y="42">· TOOLS/LIST</text>
 <text class="sans h1" x="48" y="86">Вычеркнуть 98 инструментов</text>
 <text class="sans lede" x="48" y="108">Покрыты все 108 методов API. По умолчанию объявляются десять — те, которыми считают.</text>`;
 }
@@ -119,6 +126,7 @@ function figures(opacity) {
 <text class="sans fignum" x="238" y="${y}">32 181 Б</text>
 <text class="sans figkey" x="48" y="${y + 20}">манифест по умолчанию · замер сериализацией ответа tools/list</text>
 <text class="sans figkey" x="${W - 48}" y="${y + 20}" text-anchor="end">npx -y yandex-metrika-mcp-server@3</text>
+<text class="sans disc" x="48" y="${y + 40}">Неофициальный клиент API. Яндекс Метрика — сервис Яндекса.</text>
 </g>`;
 }
 

@@ -23,7 +23,8 @@ import type { Method, Spec } from './spec.js';
 /** Пустая схема, объявленная явно: пустая форма даёт схему без запрета лишних ключей. */
 const NO_PARAMS = z.object({}).strict();
 
-const SECTION_NAMES: Record<Method['api'], string> = {
+/** Разделы API. Экспортированы: тем же делением пользуется CLI, и оно должно быть одно. */
+export const SECTION_NAMES: Record<Method['api'], string> = {
   stat: 'Stat API — отчёты',
   management: 'Management API — счётчики, цели, сегменты, доступы',
   logs: 'Logs API — выгрузка сырых визитов и хитов',

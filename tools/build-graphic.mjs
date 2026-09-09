@@ -132,22 +132,32 @@ function figures(opacity) {
 
 // --- анимированный SVG ---------------------------------------------------
 
-const CUT_START = 1.1;
-const CUT_SPAN = 2.6;
-const LOOP = 11;
+const CUT_START = 0.7;
+const CUT_SPAN = 2.6;  // последний вычерк ложится на 3,3 с, вся анимация — под 4 с
 
-// Задержка на каждой линии — штатным animation-delay, а не переменной в
+// Анимация проигрывается ОДИН раз и замирает — не зацикливается.
+//
+// WCAG 2.2, SC 2.2.2 «Pause, Stop, Hide» (уровень A): автозапущенное движение
+// дольше 5 секунд рядом с другим контентом обязано иметь механизм паузы.
+// В README его нет и быть не может, поэтому ломаем условие длительности:
+// всё укладывается в 4 секунды и останавливается (техника W3C G152).
+//
+// ⚠️ prefers-reduced-motion этого НЕ закрывает — он про настройку ОС и
+// AAA-критерий 2.3.3, а 2.2.2 уровня A требует механизма на самой странице.
+//
+// fill-mode both: во время задержки применяется кадр 0%, поэтому вычерк скрыт
+// до своего момента. Рендерер, игнорирующий CSS-анимации, берёт базовый
+// стиль — конечное состояние. Верно в обе стороны.
+//
+// Задержка на каждой линии — штатным animation-delay, а не переменной внутри
 // keyframes: последнее поддерживается неровно, а картинка идёт в чужие README.
-const animStyle = `  .s { transform-origin: left center; animation: cut ${LOOP}s linear infinite; }
-  @keyframes cut { 0% { transform: scaleX(0); } 3% { transform: scaleX(1); } 92% { transform: scaleX(1); } 96%, 100% { transform: scaleX(0); } }
-  .fadein { animation: fadein ${LOOP}s linear infinite; }
-  @keyframes fadein { 0%, 34% { opacity: 0; } 40%, 92% { opacity: 1; } 97%, 100% { opacity: 0; } }
-  .keepbox { animation: keepin ${LOOP}s linear infinite; }
-  @keyframes keepin { 0%, 30% { opacity: 0; } 36%, 92% { opacity: 1; } 97%, 100% { opacity: 0; } }
+const animStyle = `  .s { transform-origin: left center; animation: cut .28s ease-out both; }
+  @keyframes cut { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .fadein { animation: fadein .5s ease-out both; animation-delay: 3.4s; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  .keepbox { animation: fadein .4s ease-out both; animation-delay: .2s; }
   @media (prefers-reduced-motion: reduce) {
     .s, .fadein, .keepbox { animation: none; }
-    .s { transform: scaleX(1); }
-    .fadein, .keepbox { opacity: 1; }
   }`;
 
 const animated = `${head(animStyle)}
@@ -202,14 +212,17 @@ ${figures(p >= 1 ? 1 : 0)}
   }
 
   // Последний кадр держится: без паузы читатель не успевает увидеть итог.
+  // -loop -1 — один проход и остановка на последнем кадре. Дефолт ffmpeg
+  // (-loop 0) бесконечный, и именно он нарушает SC 2.2.2. Пауза в конце (tpad)
+  // не нужна: остановившаяся гифка и так стоит на финальном кадре.
   execFileSync('ffmpeg', [
     '-y', '-loglevel', 'error',
     '-framerate', '9', '-i', join(tmp, 'f%03d.png'),
-    '-filter_complex', 'tpad=stop_mode=clone:stop_duration=2.6,split[a][b];[a]palettegen=max_colors=64[p];[b][p]paletteuse=dither=bayer:bayer_scale=3',
-    '-loop', '0',
+    '-filter_complex', 'split[a][b];[a]palettegen=max_colors=64[p];[b][p]paletteuse=dither=bayer:bayer_scale=3',
+    '-loop', '-1',
     join(root, 'assets/surface.gif'),
   ]);
   rmSync(tmp, { recursive: true, force: true });
   const size = readFileSync(join(root, 'assets/surface.gif')).length;
-  console.log(`assets/surface.gif — ${(size / 1024).toFixed(0)} КБ, ${FRAMES} кадров + пауза`);
+  console.log(`assets/surface.gif — ${(size / 1024).toFixed(0)} КБ, ${FRAMES} кадров, один проход`);
 }

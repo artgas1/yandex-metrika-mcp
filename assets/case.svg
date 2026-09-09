@@ -13,17 +13,16 @@
   .num { font-size: 17px; fill: #16191d; font-weight: 600; font-variant-numeric: tabular-nums; }
   .cr { fill: #2f7d5b; }
   .foottext { font-size: 15px; fill: #4c545e; }
-  .q1 { animation: fade 8s linear infinite; animation-delay: .2s; }
-  .q2 { animation: fade 8s linear infinite; animation-delay: .7s; }
-  .chip { animation: fade 8s linear infinite; animation-delay: 1.3s; }
-  .row { animation: fade 8s linear infinite; }
-  .bar { animation: grow 8s linear infinite; transform-origin: left center; }
-  .foot { animation: fade 8s linear infinite; animation-delay: 3.3s; }
-  @keyframes fade { 0%, 4% { opacity: 0; } 12%, 92% { opacity: 1; } 98%, 100% { opacity: 0; } }
-  @keyframes grow { 0%, 4% { transform: scaleX(0); } 14%, 92% { transform: scaleX(1); } 98%, 100% { transform: scaleX(0); } }
+  .q1 { animation: fade .45s ease-out both; animation-delay: .1s; }
+  .q2 { animation: fade .45s ease-out both; animation-delay: .5s; }
+  .chip { animation: fade .45s ease-out both; animation-delay: 1s; }
+  .row { animation: fade .4s ease-out both; }
+  .bar { animation: grow .5s cubic-bezier(.2,.7,.3,1) both; transform-origin: left center; }
+  .foot { animation: fade .45s ease-out both; animation-delay: 3.2s; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   @media (prefers-reduced-motion: reduce) {
-    .q1, .q2, .chip, .row, .foot { animation: none; opacity: 1; }
-    .bar { animation: none; transform: scaleX(1); }
+    .q1, .q2, .chip, .row, .foot, .bar { animation: none; }
   }
 </style>
 <rect width="1200" height="630" fill="#eceef0"/>
@@ -51,30 +50,30 @@
 <text class="sans th" x="1010" y="330" text-anchor="end">ЦЕЛИ</text>
 <text class="sans th" x="1120" y="330" text-anchor="end">КОНВЕРСИЯ</text>
 <line x1="80" y1="342" x2="1120" y2="342" stroke="#16191d" stroke-width="1.4"/>
-<g class="row" style="animation-delay:1.80s">
+<g class="row" style="animation-delay:1.50s">
   <text class="sans td" x="80" y="372">Поиск</text>
-  <rect class="bar" x="420" y="360" width="300.0" height="15" rx="1.5" fill="#b9c6d6" style="animation-delay:1.90s"/>
+  <rect class="bar" x="420" y="360" width="300.0" height="15" rx="1.5" fill="#b9c6d6" style="animation-delay:1.60s"/>
   <text class="sans num" x="732.0" y="372">12 480</text>
   <text class="sans num" x="1010" y="372" text-anchor="end">386</text>
   <text class="sans num cr" x="1120" y="372" text-anchor="end">3,1%</text>
 </g>
-<g class="row" style="animation-delay:2.10s">
+<g class="row" style="animation-delay:1.84s">
   <text class="sans td" x="80" y="416">Реклама</text>
-  <rect class="bar" x="420" y="404" width="51.4" height="15" rx="1.5" fill="#b9c6d6" style="animation-delay:2.20s"/>
+  <rect class="bar" x="420" y="404" width="51.4" height="15" rx="1.5" fill="#b9c6d6" style="animation-delay:1.94s"/>
   <text class="sans num" x="483.4" y="416">2 140</text>
   <text class="sans num" x="1010" y="416" text-anchor="end">118</text>
   <text class="sans num cr" x="1120" y="416" text-anchor="end">5,5%</text>
 </g>
-<g class="row" style="animation-delay:2.40s">
+<g class="row" style="animation-delay:2.18s">
   <text class="sans td" x="80" y="460">Прямые заходы</text>
-  <rect class="bar" x="420" y="448" width="45.8" height="15" rx="1.5" fill="#b9c6d6" style="animation-delay:2.50s"/>
+  <rect class="bar" x="420" y="448" width="45.8" height="15" rx="1.5" fill="#b9c6d6" style="animation-delay:2.28s"/>
   <text class="sans num" x="477.8" y="460">1 905</text>
   <text class="sans num" x="1010" y="460" text-anchor="end">44</text>
   <text class="sans num cr" x="1120" y="460" text-anchor="end">2,3%</text>
 </g>
-<g class="row" style="animation-delay:2.70s">
+<g class="row" style="animation-delay:2.52s">
   <text class="sans td" x="80" y="504">Переходы по ссылкам</text>
-  <rect class="bar" x="420" y="492" width="15.4" height="15" rx="1.5" fill="#b9c6d6" style="animation-delay:2.80s"/>
+  <rect class="bar" x="420" y="492" width="15.4" height="15" rx="1.5" fill="#b9c6d6" style="animation-delay:2.62s"/>
   <text class="sans num" x="447.4" y="504">640</text>
   <text class="sans num" x="1010" y="504" text-anchor="end">12</text>
   <text class="sans num cr" x="1120" y="504" text-anchor="end">1,9%</text>

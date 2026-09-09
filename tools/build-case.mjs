@@ -79,18 +79,32 @@ function svg(step) {
   const rowsOn = animate ? CASE.rows.length : Math.max(0, Math.min(CASE.rows.length, step - 3));
   const footOn = animate || step >= 8;
 
+  // Анимация проигрывается ОДИН раз и замирает — не зацикливается.
+  //
+  // WCAG 2.2, SC 2.2.2 «Pause, Stop, Hide» (уровень A): автоматически
+  // запущенное движение дольше 5 секунд рядом с другим контентом обязано иметь
+  // механизм паузы. В README такого механизма нет и быть не может, поэтому
+  // ломаем другое условие — длительность. Всё укладывается в 4 секунды и
+  // останавливается (техника W3C G152).
+  //
+  // ⚠️ prefers-reduced-motion этого требования НЕ закрывает: он отражает
+  // настройку ОС и относится к AAA-критерию 2.3.3, а 2.2.2 — уровень A и
+  // требует механизма на самой странице. Уважаем оба, но по разным причинам.
+  //
+  // fill-mode both: во время задержки применяется кадр 0%, поэтому элемент
+  // скрыт до своего момента. Рендерер, который CSS-анимации игнорирует вовсе,
+  // берёт базовый стиль — то есть конечное состояние. Верно в обе стороны.
   const anim = animate
-    ? `  .q1 { animation: fade 8s linear infinite; animation-delay: .2s; }
-  .q2 { animation: fade 8s linear infinite; animation-delay: .7s; }
-  .chip { animation: fade 8s linear infinite; animation-delay: 1.3s; }
-  .row { animation: fade 8s linear infinite; }
-  .bar { animation: grow 8s linear infinite; transform-origin: left center; }
-  .foot { animation: fade 8s linear infinite; animation-delay: 3.3s; }
-  @keyframes fade { 0%, 4% { opacity: 0; } 12%, 92% { opacity: 1; } 98%, 100% { opacity: 0; } }
-  @keyframes grow { 0%, 4% { transform: scaleX(0); } 14%, 92% { transform: scaleX(1); } 98%, 100% { transform: scaleX(0); } }
+    ? `  .q1 { animation: fade .45s ease-out both; animation-delay: .1s; }
+  .q2 { animation: fade .45s ease-out both; animation-delay: .5s; }
+  .chip { animation: fade .45s ease-out both; animation-delay: 1s; }
+  .row { animation: fade .4s ease-out both; }
+  .bar { animation: grow .5s cubic-bezier(.2,.7,.3,1) both; transform-origin: left center; }
+  .foot { animation: fade .45s ease-out both; animation-delay: 3.2s; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   @media (prefers-reduced-motion: reduce) {
-    .q1, .q2, .chip, .row, .foot { animation: none; opacity: 1; }
-    .bar { animation: none; transform: scaleX(1); }
+    .q1, .q2, .chip, .row, .foot, .bar { animation: none; }
   }`
     : '';
 
@@ -100,8 +114,8 @@ function svg(step) {
       const y = 372 + i * 44;
       const w = (visits / top) * BAR_MAX;
       const on = animate || i < rowsOn;
-      const d = animate ? ` style="animation-delay:${(1.8 + i * 0.3).toFixed(2)}s"` : '';
-      const db = animate ? ` style="animation-delay:${(1.9 + i * 0.3).toFixed(2)}s"` : '';
+      const d = animate ? ` style="animation-delay:${(1.5 + i * 0.34).toFixed(2)}s"` : '';
+      const db = animate ? ` style="animation-delay:${(1.6 + i * 0.34).toFixed(2)}s"` : '';
       return `<g class="row"${d}${on ? '' : ' opacity="0"'}>
   <text class="sans td" x="80" y="${y}">${esc(name)}</text>
   <rect class="bar" x="420" y="${y - 12}" width="${w.toFixed(1)}" height="15" rx="1.5" fill="${C.bar}"${db}/>
@@ -184,12 +198,16 @@ if (process.argv.includes('--gif')) {
     writeFileSync(join(tmp, `f${n}.svg`), svg(f + 1));
     execFileSync('rsvg-convert', ['-w', '960', '-o', join(tmp, `f${n}.png`), join(tmp, `f${n}.svg`)]);
   }
+  // -loop -1 — проиграть один раз и остановиться на последнем кадре.
+  // Дефолт ffmpeg (-loop 0) — бесконечно, и именно он нарушает SC 2.2.2.
+  // Паузы в конце (tpad) больше не нужно: остановившаяся гифка и так стоит
+  // на финальном кадре, а раньше эта пауза просто съедала лимит длительности.
+  const FPS = 2.6; // 10 кадров ≈ 3,8 с — с запасом под пятисекундный порог
   execFileSync('ffmpeg', [
     '-y', '-loglevel', 'error',
-    '-framerate', '2', '-i', join(tmp, 'f%02d.png'),
-    '-filter_complex',
-    'tpad=stop_mode=clone:stop_duration=3.4,split[a][b];[a]palettegen=max_colors=48[p];[b][p]paletteuse=dither=none',
-    '-loop', '0',
+    '-framerate', String(FPS), '-i', join(tmp, 'f%02d.png'),
+    '-filter_complex', 'split[a][b];[a]palettegen=max_colors=48[p];[b][p]paletteuse=dither=none',
+    '-loop', '-1',
     join(root, 'assets/case.gif'),
   ]);
   rmSync(tmp, { recursive: true, force: true });

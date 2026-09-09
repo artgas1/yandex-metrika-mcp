@@ -287,12 +287,24 @@ npx -y yandex-metrika-mcp-server call metrika_stat_data \
 On top of it sits a **skill** — a folder of instructions for the agent, installed in one line:
 
 ```bash
-npx skills add artgas1/yandex-metrika-mcp
+npx skills add artgas1/yandex-metrika-mcp        # into the current project
+npx skills add artgas1/yandex-metrika-mcp -g     # globally, for every project
 ```
 
 The skill adds no tools to the client and holds nothing in context: it is read only once the
 conversation is about Metrika. Inside are that same command, a reference for all 108 methods,
 and a dimension vocabulary.
+
+**Where it works.** The installer places one copy in `.agents/skills/yandex-metrika/` and
+symlinks it into agent-specific directories. Verified by running two of them:
+
+| agent | discovery | how it was checked |
+| --- | --- | --- |
+| Claude Code | `.claude/skills/` → symlink | `/yandex-metrika` answers from the skill's own content |
+| Codex | `.agents/skills/` directly | names the path to `SKILL.md`; needs no line in `AGENTS.md` and no `config.toml` setting |
+
+The installer claims some twenty more agents through that same universal directory
+(Amp, Cline, Antigravity, Augment and others) — those we did not check.
 
 **Why this is not a second implementation.** The CLI issues no request of its own: it parses
 arguments and calls `executeMethod` — the very function the MCP tools call. Hence the same

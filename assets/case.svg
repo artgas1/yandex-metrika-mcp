@@ -43,7 +43,7 @@
 <g class="chip">
   <rect x="80" y="248" width="160.3" height="26" rx="13" fill="#f7f8f9" stroke="#fc3f1d" stroke-opacity=".5"/>
   <text class="mono chiptext" x="93" y="266">metrika_stat_data</text>
-  <text class="mono meas" x="254" y="266">ym:s:visits, ym:s:goal12345reaches · счётчик 12345678</text>
+  <text class="mono meas" x="254" y="266">ym:s:visits, ym:s:goal12345reaches</text>
 </g>
 
 <text class="sans th" x="80" y="330">ИСТОЧНИК</text>

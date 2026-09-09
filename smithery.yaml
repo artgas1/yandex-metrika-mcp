@@ -9,16 +9,24 @@ startCommand:
       YANDEX_API_KEY:
         type: string
         format: password
-        description: "Яндекс OAuth token with Metrika access. Required — the server refuses to start without it."
+        description: "Yandex OAuth token with Metrika access. Required — the server refuses to start without it."
+      METRIKA_PROFILE:
+        type: string
+        enum: ["core", "read", "all"]
+        default: "core"
+        description: "How much of the 108-method catalogue is declared: core = 10 report and lookup tools (the default), read = all 51 read-only ones, all = everything. An unknown value aborts startup. Whatever is not declared costs nothing: undeclared tools are never registered, so their descriptions never reach the model's context."
       METRIKA_ALLOW_WRITES:
         type: string
-        description: "Set to 1 to allow data-changing calls. Left unset, the 57 mutating tools stay visible but return a refusal."
+        description: "Set to 1 to allow data-changing calls. Without it the mutating tools are not registered at all — they are absent from tools/list rather than present-and-refusing. Takes effect only together with METRIKA_PROFILE=all."
       METRIKA_TOOLS:
         type: string
-        description: "Comma-separated tool filter: an API section (stat, logs, management), a name prefix, or an exact tool name. Empty means all 108."
+        description: "Explicit comma-separated tool filter: an API section (stat, logs, management), a name prefix, or an exact tool name. When set it overrides METRIKA_PROFILE entirely; when empty the profile decides."
       METRIKA_TRAFFIC_FILTER:
         type: string
         description: "Segmentation expression added to Stat reports. Defaults to ym:s:isRobot=='no'."
       METRIKA_MAX_OUTPUT_CHARS:
         type: string
         description: "Per-call response size cap in characters. Defaults to 120000."
+      METRIKA_API_BASE:
+        type: string
+        description: "Override the API base URL (proxy, or a stub in tests). Leave unset for the real Metrika API; the substitution is announced on stderr at startup."

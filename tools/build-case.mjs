@@ -28,7 +28,9 @@ const C = {
   ink: '#16191d',
   soft: '#4c545e',
   muted: '#98a1ab',
-  pen: '#c8362a',
+  // Фирменный красный Яндекса — только акцентом: метка, чип, точка сноски.
+  // Заливать им площади нельзя, это чужой знак, а не наша палитра.
+  ya: '#fc3f1d',
   blue: '#2a4a7f',
   bar: '#b9c6d6',
   green: '#2f7d5b',
@@ -40,6 +42,9 @@ const CASE = {
   // разорвать слово пополам, что и случилось на первой сборке.
   question: ['Откуда приходили люди за неделю', 'и сколько дошло до цели?'],
   tool: 'metrika_stat_data',
+  // Идентификаторы настоящие: для того, кто ставит этот сервер, строка
+  // ym:s:visits говорит «Метрика» однозначнее любого логотипа.
+  measures: 'ym:s:visits, ym:s:goal12345reaches · счётчик 12345678',
   rows: [
     ['Поиск', 12480, 386, '3,1%'],
     ['Реклама', 2140, 118, '5,5%'],
@@ -108,7 +113,10 @@ function svg(step) {
   .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
   .tag { font-size: 12px; fill: ${C.muted}; letter-spacing: .4px; }
   .q { font-size: 34px; font-weight: 700; fill: ${C.ink}; letter-spacing: -.5px; }
-  .chiptext { font-size: 13px; fill: ${C.blue}; }
+  .brand { font-size: 14px; fill: ${C.ink}; font-weight: 600; }
+  .chiptext { font-size: 13px; fill: ${C.ya}; }
+  .meas { font-size: 12px; fill: ${C.muted}; }
+  .disc { font-size: 12px; fill: ${C.muted}; }
   .th { font-size: 11px; letter-spacing: 1.2px; fill: ${C.muted}; font-weight: 600; }
   .td { font-size: 17px; fill: ${C.ink}; }
   .num { font-size: 17px; fill: ${C.ink}; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -118,7 +126,10 @@ ${anim}
 </style>
 <rect width="${W}" height="${H}" fill="${C.paper}"/>
 
-<text class="mono tag" x="80" y="70">yandex-metrika-mcp</text>
+<rect x="80" y="52" width="11" height="11" rx="1.5" fill="${C.ya}"/>
+<text class="sans brand" x="99" y="62">Яндекс Метрика</text>
+<text class="sans tag" x="228" y="62">· API v1</text>
+<text class="mono tag" x="1120" y="62" text-anchor="end">yandex-metrika-mcp</text>
 
 <g class="q1"${qLines >= 1 ? '' : ' opacity="0"'}>
   <text class="sans q" x="80" y="168">${esc(CASE.question[0])}</text>
@@ -128,8 +139,9 @@ ${anim}
 </g>
 
 <g class="chip"${chipOn ? '' : ' opacity="0"'}>
-  <rect x="80" y="252" width="${CASE.tool.length * 7.9 + 26}" height="26" rx="13" fill="${C.card}" stroke="${C.blue}" stroke-opacity=".4"/>
-  <text class="mono chiptext" x="93" y="270">${esc(CASE.tool)}</text>
+  <rect x="80" y="248" width="${CASE.tool.length * 7.9 + 26}" height="26" rx="13" fill="${C.card}" stroke="${C.ya}" stroke-opacity=".5"/>
+  <text class="mono chiptext" x="93" y="266">${esc(CASE.tool)}</text>
+  <text class="mono meas" x="${(80 + CASE.tool.length * 7.9 + 40).toFixed(0)}" y="266">${esc(CASE.measures)}</text>
 </g>
 
 <text class="sans th" x="80" y="330">ИСТОЧНИК</text>
@@ -141,9 +153,10 @@ ${rows}
 
 <g class="foot"${footOn ? '' : ' opacity="0"'}>
   <line x1="80" y1="546" x2="1120" y2="546" stroke="${C.rule}"/>
-  <circle cx="86" cy="578" r="3.5" fill="${C.pen}"/>
+  <circle cx="86" cy="578" r="3.5" fill="${C.ya}"/>
   <text class="sans foottext" x="100" y="583">${esc(CASE.footer)}</text>
   <text class="mono tag" x="1120" y="583" text-anchor="end">npx -y yandex-metrika-mcp-server@3</text>
+  <text class="sans disc" x="100" y="606">Неофициальный клиент API. Яндекс Метрика — сервис Яндекса.</text>
 </g>
 </svg>
 `;

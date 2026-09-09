@@ -4,7 +4,10 @@
   .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
   .tag { font-size: 12px; fill: #98a1ab; letter-spacing: .4px; }
   .q { font-size: 34px; font-weight: 700; fill: #16191d; letter-spacing: -.5px; }
-  .chiptext { font-size: 13px; fill: #2a4a7f; }
+  .brand { font-size: 14px; fill: #16191d; font-weight: 600; }
+  .chiptext { font-size: 13px; fill: #fc3f1d; }
+  .meas { font-size: 12px; fill: #98a1ab; }
+  .disc { font-size: 12px; fill: #98a1ab; }
   .th { font-size: 11px; letter-spacing: 1.2px; fill: #98a1ab; font-weight: 600; }
   .td { font-size: 17px; fill: #16191d; }
   .num { font-size: 17px; fill: #16191d; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -25,7 +28,10 @@
 </style>
 <rect width="1200" height="630" fill="#eceef0"/>
 
-<text class="mono tag" x="80" y="70">yandex-metrika-mcp</text>
+<rect x="80" y="52" width="11" height="11" rx="1.5" fill="#fc3f1d"/>
+<text class="sans brand" x="99" y="62">Яндекс Метрика</text>
+<text class="sans tag" x="228" y="62">· API v1</text>
+<text class="mono tag" x="1120" y="62" text-anchor="end">yandex-metrika-mcp</text>
 
 <g class="q1">
   <text class="sans q" x="80" y="168">Откуда приходили люди за неделю</text>
@@ -35,8 +41,9 @@
 </g>
 
 <g class="chip">
-  <rect x="80" y="252" width="160.3" height="26" rx="13" fill="#f7f8f9" stroke="#2a4a7f" stroke-opacity=".4"/>
-  <text class="mono chiptext" x="93" y="270">metrika_stat_data</text>
+  <rect x="80" y="248" width="160.3" height="26" rx="13" fill="#f7f8f9" stroke="#fc3f1d" stroke-opacity=".5"/>
+  <text class="mono chiptext" x="93" y="266">metrika_stat_data</text>
+  <text class="mono meas" x="254" y="266">ym:s:visits, ym:s:goal12345reaches · счётчик 12345678</text>
 </g>
 
 <text class="sans th" x="80" y="330">ИСТОЧНИК</text>
@@ -75,8 +82,9 @@
 
 <g class="foot">
   <line x1="80" y1="546" x2="1120" y2="546" stroke="#d2d7dd"/>
-  <circle cx="86" cy="578" r="3.5" fill="#c8362a"/>
+  <circle cx="86" cy="578" r="3.5" fill="#fc3f1d"/>
   <text class="sans foottext" x="100" y="583">Семь шагов в интерфейсе Метрики — одним вопросом.</text>
   <text class="mono tag" x="1120" y="583" text-anchor="end">npx -y yandex-metrika-mcp-server@3</text>
+  <text class="sans disc" x="100" y="606">Неофициальный клиент API. Яндекс Метрика — сервис Яндекса.</text>
 </g>
 </svg>

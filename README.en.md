@@ -11,6 +11,11 @@ mcp-name: io.github.artgas1/yandex-metrika-mcp-server
 
 <img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/case.svg" alt="The question "Where did people come from this week and how many reached the goal?" answered as a table: Search — 12,480 visits, 386 goals, 3.1% conversion; Ads — 2,140 and 5.5%; direct — 1,905 and 2.3%; referrals — 640 and 1.9%. Figures are illustrative." width="100%">
 
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/demo.gif" alt="A terminal recording of the server at work: it introduces itself as yandex-metrika-mcp-server, exposes 10 methods out of 108, calls metrika_stat_data and shows the filter it added, then the report rows by traffic source." width="100%">
+
+<sup>A real run, not a mockup: everything in the recording comes from the server's own JSON-RPC responses. Data is from a local stub — no token, no network. Rebuild with <code>npm run demo:record</code>.</sup>
+
+
 *[Русская версия](./README.md) — the fuller one; this page is a faithful summary.*
 
 ```bash

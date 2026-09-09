@@ -5,6 +5,13 @@
 
 ## [Unreleased]
 
+## [3.2.2] — 2026-09-09
+
+Кода в этом выпуске нет: он существует ради страницы пакета. Вся графика
+приехала в README после тега 3.2.1, а npm показывает README **той версии,
+что опубликована**, — то есть до этого выпуска на странице пакета не было
+ни одной картинки.
+
 ### Изменено
 
 - **Запись демо переписана: было видно протокол, а не пользу.** Первая версия
@@ -172,8 +179,6 @@
   Список в ответе строится из того же отбора, по которому инструменты
   регистрируются, — разойтись с реальностью ему негде. Проверяется восемью
   тестами, включая сверку «объявленное + скрытое = вся спека».
-
-## [Unreleased]
 
 ### Исправлено
 
@@ -402,6 +407,11 @@
   `sources_summary`, `get_page_performance` и прочие). Они покрывали малую часть
   API, зашивали измерения и период в код и не давали задать произвольный запрос.
 
+[3.2.2]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v3.2.2
+[3.2.1]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v3.2.1
+[3.2.0]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v3.2.0
+[3.1.0]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v3.1.0
+[3.0.0]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v3.0.0
 [2.2.5]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v2.2.5
 [2.2.4]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v2.2.4
 [2.2.3]: https://github.com/artgas1/yandex-metrika-mcp/releases/tag/v2.2.3

@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 /**
- * Живое демо: поднимает сервер и говорит с ним по настоящему JSON-RPC.
+ * Живой прогон: что уходит в сервер и что он отвечает.
  *
- * Отличие от нарисованной картинки принципиальное. Всё, что печатается ниже,
- * взято ИЗ ОТВЕТА сервера — версия из `initialize`, число инструментов из
- * `tools/list`, строка добавленного фильтра из `_meta.applied_by_server`,
- * строки отчёта из тела ответа. Ничего не вписано в макет руками, поэтому
- * демо не может разойтись с поведением: разойдётся — увидим на записи.
+ * Показывается ровно пара «запрос → ответ». Версия сервера, число объявленных
+ * инструментов и прочая внутренняя кухня отсюда убраны намеренно: читателю от
+ * них ничего не прибавляется, а место они занимают. Первая версия этого демо
+ * состояла из них почти целиком и была нечитаемой.
+ *
+ * Всё, что печатается, взято ИЗ ОТВЕТА сервера — строка добавленного фильтра
+ * из `_meta.applied_by_server`, строки отчёта из тела. Ничего не вписано
+ * руками, поэтому демо не может разойтись с поведением молча.
  *
  * Токен и сеть не нужны: запросы уводятся на локальную заглушку через
- * METRIKA_API_BASE. Числа поэтому заглушечные, и демо об этом говорит само.
+ * METRIKA_API_BASE, поэтому прогон воспроизводится где угодно, включая CI.
  *
  * Запуск: node tools/demo.mjs   (через npm run demo)
  * Запись: vhs demo.tape
@@ -31,58 +34,54 @@ const ROWS = [
   { dimensions: [{ name: 'Прямые заходы' }], metrics: [243, 194] },
 ];
 
+/** Аргументы вызова — они же то, что показывается как «запрос». */
+const ARGS = {
+  ids: [1],
+  dimensions: 'ym:s:trafficSource',
+  metrics: 'ym:s:visits,ym:s:users',
+  date1: '7daysAgo',
+  date2: 'today',
+};
+
 const pad = (s, n) => s + ' '.repeat(Math.max(0, n - [...s].length));
-const say = (k, v) => console.log(`  ${C.dim}${pad(k, 26)}${C.off}${v}`);
 
 const stub = createServer((_req, res) => {
   res.writeHead(200, { 'content-type': 'application/json' });
   res.end(JSON.stringify({ query: {}, data: ROWS, total_rows: ROWS.length, sampled: false }));
 });
 await new Promise((r) => stub.listen(0, '127.0.0.1', r));
-const base = `http://127.0.0.1:${stub.address().port}`;
 
-const client = startServer({ YANDEX_API_KEY: 'demo', METRIKA_API_BASE: base });
+const client = startServer({
+  YANDEX_API_KEY: 'demo',
+  METRIKA_API_BASE: `http://127.0.0.1:${stub.address().port}`,
+});
+
 try {
-  const info = await client.initialize('demo');
-  await client.listAllTools();
+  await client.initialize('demo');
 
-  console.log();
-  // Счёт берём у самого сервера: 11 в tools/list — это 10 методов API плюс
-  // служебный каталог, и смешивать их в одной цифре значит соврать в мелочи.
-  const cat = JSON.parse((await client.callTool('metrika_catalog_list', {})).content[0].text);
+  console.log(`\n  ${C.dim}запрос${C.off}   ${C.ya}metrika_stat_data${C.off}`);
+  for (const [k, v] of Object.entries(ARGS)) {
+    if (k === 'ids') continue; // идентификатор счётчика читателю ничего не говорит
+    console.log(`           ${C.dim}${pad(k, 11)}${C.off}${C.ink}${v}${C.off}`);
+  }
 
-  say('сервер', `${C.ink}${info.serverInfo.name} ${info.serverInfo.version}${C.off}`);
-  say('методов объявлено', `${C.ink}${cat.api_methods_declared}${C.off} ${C.dim}из ${cat.api_methods_total}${C.off}`);
-
-  const res = await client.callTool('metrika_stat_data', {
-    // Заглушка идентификатор игнорирует, и на экран он не попадает. Ставим
-    // единицу, а не правдоподобный восьмизначный номер: гвард на следы
-    // проекта не умеет отличить выдуманный счётчик от настоящего.
-    ids: [1],
-    metrics: 'ym:s:visits,ym:s:users',
-    dimensions: 'ym:s:trafficSource',
-    date1: '7daysAgo',
-    date2: 'today',
-  });
+  const res = await client.callTool('metrika_stat_data', ARGS);
   const payload = JSON.parse(res.content[0].text);
 
-  say('вызов', `${C.ya}metrika_stat_data${C.off}`);
-  console.log();
-
-  // Ровно то, что сервер объявил о своей собственной добавке. Не пересказ.
+  console.log(`\n  ${C.dim}ответ${C.off}`);
+  // То, что сервер объявил о собственной добавке. Не пересказ — его слова.
   for (const line of payload._meta.applied_by_server ?? []) {
-    console.log(`  ${C.ya}+${C.off} ${C.dim}${line}${C.off}`);
+    console.log(`           ${C.ya}+${C.off} ${C.dim}${line}${C.off}`);
   }
   console.log();
-
   for (const row of payload.data.data) {
     const [visits, users] = row.metrics;
     console.log(
-      `  ${C.ink}${pad(row.dimensions[0].name, 20)}${C.off}` +
-        `${C.ok}${String(visits).padStart(6)}${C.off}${C.dim}  визитов, ${users} человек${C.off}`,
+      `           ${C.ink}${pad(row.dimensions[0].name, 16)}${C.off}` +
+        `${C.ok}${String(visits).padStart(5)}${C.off}${C.dim} визитов, ${users} человек${C.off}`,
     );
   }
-  console.log(`\n  ${C.dim}данные из локальной заглушки — ни токена, ни сети${C.off}\n`);
+  console.log();
 } finally {
   client.close();
   stub.close();

@@ -13,9 +13,6 @@ mcp-name: io.github.artgas1/yandex-metrika-mcp-server
 
 <img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/case.svg" alt="Вопрос «Откуда приходили люди за неделю и сколько дошло до цели?» и ответ таблицей: Поиск — 12 480 визитов, 386 целей, конверсия 3,1%; Реклама — 2 140 и 5,5%; прямые заходы — 1 905 и 2,3%; переходы по ссылкам — 640 и 1,9%. Числа иллюстративные." width="100%">
 
-<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/demo.gif" alt="Запись работы сервера в терминале: он представляется как yandex-metrika-mcp-server, объявляет 10 методов из 108, вызывает metrika_stat_data и показывает добавленный им фильтр ym:s:isRobot равно no, затем строки отчёта по источникам трафика." width="100%">
-
-<sup>Настоящий запуск, а не макет: всё на записи приходит из ответа сервера по JSON-RPC. Данные — из локальной заглушки, ни токена, ни сети. Пересобрать — <code>npm run demo:record</code>.</sup>
 
 
 ```bash
@@ -280,8 +277,19 @@ YANDEX_API_KEY=<OAuth-токен с scope direct:api / metrika> npm start
 
 ## Проверки
 
+### Не макет — запустите сами
+
 ```bash
-npm test          # 67 тестов: спека, схемы, протокол MCP, поверхность и её бюджет
+npm run demo
+```
+
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/demo.gif" alt="Запись прогона в терминале: запрос metrika_stat_data с измерением по источникам трафика и периодом в неделю, ответ с объявленным фильтром роботов и тремя строками отчёта." width="100%">
+
+<sup>Всё на записи приходит из ответа сервера по JSON-RPC: строка добавленного фильтра — из <code>_meta.applied_by_server</code>, строки отчёта — из тела ответа. Ни токена, ни сети: запросы уводятся на локальную заглушку, поэтому прогон повторяется где угодно, включая CI. Переснять запись — <code>npm run demo:record</code>.</sup>
+
+
+```bash
+npm test          # 87 тестов: спека, схемы, протокол MCP, поверхность, бандл, демо
 npm run protocol  # только протокольные: stdio, tools/list, tools/call, отказы
 npm run smoke     # живые вызовы к API (нужен YANDEX_API_KEY)
 ```

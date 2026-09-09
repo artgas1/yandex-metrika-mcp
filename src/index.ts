@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { CLI_COMMANDS, runCli } from './cli.js';
 import { loadSpec } from './spec.js';
 import { isWrite } from './annotations.js';
 import { apiOrigin } from './http.js';
@@ -18,6 +19,23 @@ import { DEFAULT_MAX_OUTPUT_CHARS, DEFAULT_TRAFFIC_FILTER, registerAll, trafficF
 const pkg = JSON.parse(
   readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8'),
 ) as { version: string };
+
+/**
+ * Развилка стоит ДО проверки токена, и это не порядок ради красоты.
+ * `catalog` и `describe` отвечают из спеки, лежащей в пакете, и токена не требуют —
+ * а проверка выше отказала бы им до того, как стало известно, что их и спросили.
+ *
+ * В режим командной строки уходим только по известному имени команды. Клиент
+ * запускает сервер без аргументов, но может добавить свои; неизвестный аргумент
+ * должен остаться сервером, а не превратиться в справку по CLI на месте stdio.
+ */
+{
+  const argv = process.argv.slice(2);
+  if (argv.length && CLI_COMMANDS.has(argv[0])) {
+    const code = await runCli(argv);
+    process.exit(code);
+  }
+}
 
 const token = process.env.YANDEX_API_KEY;
 if (!token) {

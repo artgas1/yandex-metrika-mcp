@@ -268,6 +268,53 @@ environment variable.
 - **stdio transport only.** The token is passed as an environment variable; the server opens
   no network listener.
 
+## Without MCP: a skill and a command line
+
+MCP does not fit every client or every moment: a client may not speak MCP at all, and tool
+descriptions occupy context continuously — they sit there for as long as the server is
+connected, whether or not you call anything.
+
+For that case the same server also runs as a command:
+
+```bash
+npx -y yandex-metrika-mcp-server catalog --search goal
+npx -y yandex-metrika-mcp-server describe metrika_stat_data
+npx -y yandex-metrika-mcp-server call metrika_stat_data \
+  --ids <counter id> --dimensions ym:s:trafficSource \
+  --metrics ym:s:visits,ym:s:users --date1 7daysAgo --date2 today
+```
+
+On top of it sits a **skill** — a folder of instructions for the agent, installed in one line:
+
+```bash
+npx skills add artgas1/yandex-metrika-mcp
+```
+
+The skill adds no tools to the client and holds nothing in context: it is read only once the
+conversation is about Metrika. Inside are that same command, a reference for all 108 methods,
+and a dimension vocabulary.
+
+**Why this is not a second implementation.** The CLI issues no request of its own: it parses
+arguments and calls `executeMethod` — the very function the MCP tools call. Hence the same
+guarantees: the robot filter on reports, the output cap with a truncation receipt, secrets
+stripped from the URL it shows you, retries by status. There is nothing for them to diverge on,
+because there is nothing separate to diverge.
+
+The method reference inside the skill is **generated** from `spec/metrika-api.json` — the spec
+that is refreshed from Yandex's documentation daily. A test compares the committed file with
+what would be generated right now, so "the skill fell behind the API" is red here, not silent.
+
+Two deliberate differences between the command and MCP:
+
+| | MCP | command |
+| --- | --- | --- |
+| `METRIKA_PROFILE` | applies, `core` by default | **does not apply** — all 108 methods available |
+| `METRIKA_ALLOW_WRITES` | required for mutating methods | **required the same way** |
+
+The profile exists so you don't pay context for descriptions of tools you never call; a command
+in a terminal carries no such cost. The write gate is about something else: a deleted goal
+cannot be restored, and relaxing it here would be a hole around the server.
+
 ## Verification
 
 ### Not a mockup — run it yourself

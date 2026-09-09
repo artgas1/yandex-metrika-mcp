@@ -9,7 +9,7 @@
     "build": "tsc",
     "start": "node ./build/index.js",
     "spec:fetch": "node tools/fetch-docs.mjs",
-    "spec:build": "node tools/parse-spec.mjs",
+    "spec:build": "node tools/parse-spec.mjs && node tools/build-skill-reference.mjs",
     "test": "tsc && node --test \"test/*.test.mjs\"",
     "smoke": "node tools/smoke.mjs",
     "inspector": "npx @modelcontextprotocol/inspector node ./build/index.js",
@@ -19,7 +19,8 @@
     "mcpb": "node tools/build-mcpb.mjs --pack",
     "graphic": "node tools/build-graphic.mjs --gif && node tools/build-case.mjs --gif",
     "demo": "node tools/demo.mjs",
-    "demo:record": "vhs demo.tape && node tools/gif-play-once.mjs assets/demo.gif"
+    "demo:record": "vhs demo.tape && node tools/gif-play-once.mjs assets/demo.gif",
+    "skill:build": "node tools/build-skill-reference.mjs"
   },
   "keywords": [
     "yandex",

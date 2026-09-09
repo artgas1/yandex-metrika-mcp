@@ -71,7 +71,7 @@ test('в пакете нет следов конкретного проекта'
     const text = readFileSync(new URL(`../${f}`, import.meta.url), 'utf8');
     // Идентификатор счётчика Метрики — 8-9 цифр подряд. В spec/ такие числа
     // приходят из примеров самого Яндекса, поэтому он исключён выше.
-    for (const m of text.matchAll(/\b\d{8,9}\b/g)) problems.push(`${f}: счётчик ${m[0]}`);
+    for (const m of text.matchAll(/\b\d{8,9}\b/g)) problems.push(`${f}: счётчик ${m[0]} — в примерах пишите плейсхолдер <ID счётчика>, а не правдоподобное число`);
     // «наш» в публичном пакете читателю ничего не сообщает — у него другой сайт.
     for (const m of text.matchAll(/\b(наш|наши|наше|нашего|нашей|наших|нашем)\b/gi)) {
       problems.push(`${f}: «${m[0]}» — чей?`);
@@ -88,7 +88,11 @@ test('в исходниках репозитория тоже нет следо�
     // --others --exclude-standard добавляет НЕотслеживаемые файлы. Без них
     // новый файл проходит локально и краснеет только на CI, после коммита:
     // ровно так и случилось с tools/demo.mjs.
-    files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', 'src', 'test', 'tools', '*.md'], {
+    //
+    // skills/ здесь потому, что это тоже публикуемый артефакт: его ставят себе
+    // чужие люди одной строкой. Сторож существует ровно для таких файлов, и не
+    // видеть новейший из них было бы дырой в нём самом.
+    files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', 'src', 'test', 'tools', 'skills', '*.md'], {
       cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'],
     }).split('\n').filter(Boolean);
   } catch {
@@ -101,7 +105,7 @@ test('в исходниках репозитория тоже нет следо�
   const problems = [];
   for (const f of files) {
     const text = readFileSync(new URL(`../${f}`, import.meta.url), 'utf8');
-    for (const m of text.matchAll(/\b\d{8,9}\b/g)) problems.push(`${f}: похоже на счётчик — ${m[0]}`);
+    for (const m of text.matchAll(/\b\d{8,9}\b/g)) problems.push(`${f}: похоже на счётчик — ${m[0]}; в примерах пишите плейсхолдер <ID счётчика>, а не правдоподобное число`);
     for (const m of text.matchAll(/\b(наш|наши|наше|нашего|нашей|наших|нашем)\b/gi)) {
       problems.push(`${f}: «${m[0]}» — чей?`);
     }

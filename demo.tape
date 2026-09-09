@@ -15,7 +15,7 @@ Output assets/demo.gif
 Set Shell zsh
 Set FontSize 20
 Set Width 1180
-Set Height 520
+Set Height 450  # под содержимое: у прежней записи половина кадра была пустой
 Set Padding 22
 Set TypingSpeed 35ms
 Set Theme { "background": "#16191d", "foreground": "#e4e7ea", "cursor": "#fc3f1d", "black": "#16191d", "red": "#fc3f1d", "green": "#4fae83", "yellow": "#d8a657", "blue": "#7fa6dd", "magenta": "#c98bdb", "cyan": "#6fb2b8", "white": "#e4e7ea", "brightBlack": "#98a1ab", "brightRed": "#fc3f1d", "brightGreen": "#4fae83", "brightYellow": "#d8a657", "brightBlue": "#7fa6dd", "brightMagenta": "#c98bdb", "brightCyan": "#6fb2b8", "brightWhite": "#ffffff" }

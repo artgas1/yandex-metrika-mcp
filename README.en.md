@@ -9,7 +9,7 @@ mcp-name: io.github.artgas1/yandex-metrika-mcp-server
 [![CI](https://github.com/artgas1/yandex-metrika-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/artgas1/yandex-metrika-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/case.svg" alt="Left: seven steps in the Metrika UI. Right: the same result from one question — a table of sources with visits, goals and conversion" width="100%">
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/case.svg" alt="The question "Where did people come from this week and how many reached the goal?" answered as a table: Search — 12,480 visits, 386 goals, 3.1% conversion; Ads — 2,140 and 5.5%; direct — 1,905 and 2.3%; referrals — 640 and 1.9%. Figures are illustrative." width="100%">
 
 *[Русская версия](./README.md) — the fuller one; this page is a faithful summary.*
 
@@ -184,7 +184,7 @@ to drift, and a test asserts it.
 
 ### Why not everything by default
 
-<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/surface.svg" alt="10 of 108 tools exposed by default, the other 98 struck out" width="100%">
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/surface.svg" alt="A list of the server’s 108 tools: ten kept, 98 struck out. The default manifest is 32,181 bytes against 158,301 for the full catalogue." width="100%">
 
 The descriptions of every exposed tool sit in the model's context on **every** turn, whether
 you call them or not. It is the one cost of a server that is always paid. Measured

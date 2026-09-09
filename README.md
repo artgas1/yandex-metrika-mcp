@@ -11,7 +11,7 @@ mcp-name: io.github.artgas1/yandex-metrika-mcp-server
 
 *[English](./README.en.md)*
 
-<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/case.svg" alt="Слева семь шагов в интерфейсе Метрики, справа тот же результат одним вопросом: таблица источников с визитами, целями и конверсией" width="100%">
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/case.svg" alt="Вопрос «Откуда приходили люди за неделю и сколько дошло до цели?» и ответ таблицей: Поиск — 12 480 визитов, 386 целей, конверсия 3,1%; Реклама — 2 140 и 5,5%; прямые заходы — 1 905 и 2,3%; переходы по ссылкам — 640 и 1,9%. Числа иллюстративные." width="100%">
 
 ```bash
 npx -y yandex-metrika-mcp-server
@@ -191,7 +191,7 @@ YANDEX_API_KEY=<OAuth-токен с scope direct:api / metrika> npm start
 
 ### Почему по умолчанию не всё
 
-<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/surface.svg" alt="Из 108 инструментов по умолчанию объявляются 10, остальные 98 вычеркнуты" width="100%">
+<img src="https://raw.githubusercontent.com/artgas1/yandex-metrika-mcp/main/assets/surface.svg" alt="Список из 108 инструментов сервера: десять оставлены, 98 вычеркнуты. Манифест по умолчанию — 32 181 байт против 158 301 у полного каталога." width="100%">
 
 Описания объявленных инструментов лежат в контексте модели, когда клиент их загрузил. Это
 цена сервера, которую платят за сам факт подключения, а не за вызовы. Замер `tools/list`

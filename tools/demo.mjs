@@ -55,7 +55,10 @@ try {
   say('методов объявлено', `${C.ink}${cat.api_methods_declared}${C.off} ${C.dim}из ${cat.api_methods_total}${C.off}`);
 
   const res = await client.callTool('metrika_stat_data', {
-    ids: [12345678],
+    // Заглушка идентификатор игнорирует, и на экран он не попадает. Ставим
+    // единицу, а не правдоподобный восьмизначный номер: гвард на следы
+    // проекта не умеет отличить выдуманный счётчик от настоящего.
+    ids: [1],
     metrics: 'ym:s:visits,ym:s:users',
     dimensions: 'ym:s:trafficSource',
     date1: '7daysAgo',

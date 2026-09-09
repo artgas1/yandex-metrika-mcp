@@ -85,7 +85,10 @@ test('в исходниках репозитория тоже нет следо�
   // счётчика и числа чужих отчётов в комментариях и фикстурах читаются так же.
   let files;
   try {
-    files = execFileSync('git', ['ls-files', 'src', 'test', 'tools', '*.md'], {
+    // --others --exclude-standard добавляет НЕотслеживаемые файлы. Без них
+    // новый файл проходит локально и краснеет только на CI, после коммита:
+    // ровно так и случилось с tools/demo.mjs.
+    files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', 'src', 'test', 'tools', '*.md'], {
       cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'],
     }).split('\n').filter(Boolean);
   } catch {

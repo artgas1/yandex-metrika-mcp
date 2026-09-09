@@ -6,7 +6,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CLI_COMMANDS, runCli } from './cli.js';
 import { loadSpec } from './spec.js';
 import { isWrite } from './annotations.js';
-import { apiOrigin } from './http.js';
+import { apiOrigin, tokenProblem } from './http.js';
 import { resolveSurface } from './profiles.js';
 import { registerCatalog } from './catalog.js';
 import { DEFAULT_MAX_OUTPUT_CHARS, DEFAULT_TRAFFIC_FILTER, registerAll, trafficFilter } from './tools.js';
@@ -43,6 +43,14 @@ if (!token) {
     'Не задан YANDEX_API_KEY — OAuth-токен Яндекс Метрики. ' +
       'Задайте его в env-секции записи сервера в .mcp.json и перезапустите клиента.',
   );
+  process.exit(1);
+}
+
+// Негодный токен ловим на старте, а не первым вызовом инструмента: там он
+// выглядит сбоем сети, а здесь про него ещё можно внятно сказать.
+const badToken = tokenProblem(token);
+if (badToken) {
+  console.error(`YANDEX_API_KEY непригоден: ${badToken}`);
   process.exit(1);
 }
 

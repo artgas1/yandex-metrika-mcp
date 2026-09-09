@@ -16,6 +16,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { parseArgv, runCli } from '../build/cli.js';
+import { tokenProblem } from '../build/http.js';
 
 const ROWS = [
   { dimensions: [{ name: 'Поиск' }], metrics: [12480, 386] },
@@ -201,6 +202,41 @@ test('без токена call не идёт в сеть и говорит, гд
     assert.match(json.hint, /oauth\.yandex\.ru/);
     assert.equal(seen.length, 0);
   });
+});
+
+test('токен с не-ASCII отвергается до сети, а не тремя повторами', async () => {
+  // Заголовок Authorization с таким токеном не собирается вовсе: fetch роняет
+  // TypeError, повтор считает это сетевым сбоем и ждёт три секунды, а итоговое
+  // сообщение не упоминает ни токен, ни заголовок. На русской раскладке «с»
+  // неотличима от латинской, так что промах рабочий, а не выдуманный.
+  const cyrillicEs = String.fromCharCode(0x0441);
+  await withStub(async (base, seen) => {
+    const started = Date.now();
+    const { code, json } = await cli(STAT_ARGS, {
+      YANDEX_API_KEY: `y0_Ac${cyrillicEs}AAA`,
+      METRIKA_API_BASE: base,
+    });
+    assert.equal(code, 4);
+    assert.match(json.message, /непригоден/);
+    assert.match(json.message, /U\+0441/, 'сообщение обязано называть символ, иначе его не найти глазами');
+    assert.equal(seen.length, 0, 'запрос ушёл, хотя заголовок с таким токеном не собирается');
+    assert.ok(Date.now() - started < 1000, 'отказ занял больше секунды — похоже, вернулись повторы');
+  });
+});
+
+test('пробел и перевод строки по краям токена НЕ отвергаются', async () => {
+  // Замерено: undici срезает их сам, запрос проходит. Сторож, который начнёт
+  // на них ругаться, сломает обычное `export YANDEX_API_KEY=$(cat file)`.
+  assert.equal(tokenProblem('y0_AcAAA\n'), null);
+  assert.equal(tokenProblem('y0_AcAAA '), null);
+  assert.equal(tokenProblem('y0_AcAAA'), null);
+});
+
+test('tokenProblem называет позицию символа, а не только факт', () => {
+  const msg = tokenProblem('abc\u2014def');
+  assert.ok(msg, 'длинное тире должно отвергаться');
+  assert.match(msg, /U\+2014/);
+  assert.match(msg, /позиции 4/);
 });
 
 test('имя метода принимается и в короткой записи', async () => {

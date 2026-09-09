@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { isWrite } from './annotations.js';
 import { SECTION_NAMES } from './catalog.js';
-import { MetrikaHttpError } from './http.js';
+import { MetrikaHttpError, tokenProblem } from './http.js';
 import { loadSpec, type Method, type Spec } from './spec.js';
 import {
   buildInputSchema,
@@ -303,6 +303,13 @@ export async function runCli(argv: readonly string[], io: CliIo = defaultIo): Pr
       message: 'не задан YANDEX_API_KEY — OAuth-токен Яндекс Метрики',
       hint: 'токен выпускается на oauth.yandex.ru, нужен доступ metrika:read (для записи — metrika:write)',
     });
+  }
+
+  // До запроса, а не после трёх повторов: заголовок с таким токеном не собирается,
+  // и повтор ничего не изменит — он только прячет причину за сетевым отказом.
+  const badToken = tokenProblem(token);
+  if (badToken) {
+    return fail(io, 4, { message: `YANDEX_API_KEY непригоден: ${badToken}` });
   }
 
   const slots = inputSlots(method);

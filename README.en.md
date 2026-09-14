@@ -146,11 +146,26 @@ not after.
 
 The token is a Yandex OAuth token — the same kind used for Yandex Direct and Webmaster.
 
+The default remains stdio. To run one local process shared by multiple MCP clients,
+enable stateless Streamable HTTP explicitly:
+
+```bash
+YANDEX_API_KEY=<OAuth-token> \
+MCP_TRANSPORT=http MCP_HOST=127.0.0.1 MCP_PORT=13404 \
+npm start
+```
+
+The endpoint is `http://127.0.0.1:13404/mcp`. A loopback listener also validates
+the `Host` header to prevent access through DNS rebinding.
+
 ### Environment variables
 
 | Variable | Default | What it does |
 | --- | --- | --- |
 | `YANDEX_API_KEY` | — | OAuth token. The server refuses to start without it. |
+| `MCP_TRANSPORT` | `stdio` | Transport: `stdio` or stateless Streamable `http`. |
+| `MCP_HOST` | `127.0.0.1` | HTTP listener address. Used only with `MCP_TRANSPORT=http`. |
+| `MCP_PORT` | `3000` | HTTP listener port, an integer from 1 through 65535. |
 | `METRIKA_PROFILE` | `core` | How much of the catalogue is exposed: `core` (10 tools), `read` (all 51 read-only), `all` (all 108). An unknown value aborts startup. |
 | `METRIKA_ALLOW_WRITES` | unset | `1` both permits and **exposes** the 57 data-changing tools. Left unset, they are absent from `tools/list` entirely. |
 | `METRIKA_TOOLS` | empty | Your own selection, comma-separated: an API section (`stat`, `logs`, `management`), a tool-name prefix (`metrika_goal`), or an exact name. Set, it overrides the profile. |
@@ -265,8 +280,8 @@ environment variable.
   through a link with text inside it and see that text in a report. Every tool carries
   `openWorldHint: true`, and reports and exports carry a reminder in `_meta.notes` that this is
   data, not instructions.
-- **stdio transport only.** The token is passed as an environment variable; the server opens
-  no network listener.
+- **stdio remains the default transport.** HTTP is enabled only with
+  `MCP_TRANSPORT=http`; its safe default binds to `127.0.0.1` and validates `Host`.
 
 ## Without MCP: a skill and a command line
 

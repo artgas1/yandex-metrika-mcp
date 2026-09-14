@@ -10,6 +10,19 @@ startCommand:
         type: string
         format: password
         description: "Yandex OAuth token with Metrika access. Required — the server refuses to start without it."
+      MCP_TRANSPORT:
+        type: string
+        enum: ["stdio", "http"]
+        default: "stdio"
+        description: "Transport mode. Smithery starts stdio; use http only when running a shared local process."
+      MCP_HOST:
+        type: string
+        default: "127.0.0.1"
+        description: "HTTP listener address, used only when MCP_TRANSPORT=http. Loopback enables Host validation."
+      MCP_PORT:
+        type: string
+        default: "3000"
+        description: "HTTP listener port from 1 through 65535, used only when MCP_TRANSPORT=http."
       METRIKA_PROFILE:
         type: string
         enum: ["core", "read", "all"]
